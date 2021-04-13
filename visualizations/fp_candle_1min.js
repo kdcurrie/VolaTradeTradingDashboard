@@ -1,5 +1,5 @@
 //constants
-const margin = {top: 70, right: 100, bottom: 90, left: 70};
+const margin = {top: 70, right: 110, bottom: 90, left: 70};
 const width = 1200 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
 
@@ -32,7 +32,7 @@ function main() {
 
         //data
         let dates = data.map(d => d.date);
-        var candlePadding = 0.3 * dates.length;
+        var candlePadding = 9.7;
 
         var xMin = d3.min(data.map(d => d.date.getTime()));
         var xMax = d3.max(data.map(d => d.date.getTime()));
@@ -91,7 +91,7 @@ function main() {
         let svg = d3.select("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .style("background-color", '#eaf3f1')
+            .style("background-color", '#191c20')
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
@@ -104,13 +104,9 @@ function main() {
             .style("pointer-events", "all")
             .attr("clip-path", "url(#clip)");
 
-        //chart
-        var chart = svg.append("g")
-            .attr("class", "chart")
-            .attr("clip-path", "url(#clip)");
-
         //title
         svg.append("text")
+            .attr("class", "title")
             .attr("x", width/2)
             .attr("y", -30)
             .style("text-anchor", "middle")
@@ -118,20 +114,36 @@ function main() {
             .style("font-weight", "bold")
             .text("Candle Stick Chart (1min)");
 
+        //grid
+        svg.append("g")
+            .attr("class", "grid")
+            .call(d3.axisBottom(xScale)
+                .tickSize(height)
+                .tickFormat("")
+            )
+
+        svg.append("g")
+            .attr("class", "grid")
+            .call(d3.axisRight(yScale)
+                .tickSize(width)
+                .tickFormat("")
+            )
 
         //axes
         var gX = svg.append("g")
-            .attr("class", "axis axis--x")
+            .attr("class", "axis--x")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
 
         var gY = svg.append("g")
-            .attr("class", "axis axis--y")
+            .attr("class", "axis--y")
             .attr("transform", "translate(" + width + ", 0)")
             .call(yAxis);
 
+
         //axes labels
         svg.append("text")
+            .attr("class", "axis label")
             .attr("transform",
                 "translate(" + (width/2 + 20) + " ," +
                 (height + margin.top - 10) + ")")
@@ -139,12 +151,18 @@ function main() {
             .text("Time");
 
         svg.append("text")
+            .attr("class", "axis label")
             .attr("transform", "rotate(-90)")
-            .attr("y", width + 50)
+            .attr("y", width + 70)
             .attr("x", 0 - ((height / 2)))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Price (USD)");
+
+        //chart
+        var chart = svg.append("g")
+            .attr("class", "chart")
+            .attr("clip-path", "url(#clip)");
 
         //candles
         console.log(dates.length*0.3)
