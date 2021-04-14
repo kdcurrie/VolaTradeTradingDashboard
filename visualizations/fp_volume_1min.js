@@ -1,8 +1,8 @@
 //constants
 const margin = {top: 70, right: 110, bottom: 90, left: 70};
 const width = 1200 - margin.left - margin.right;
-const height = 600 - margin.top - margin.bottom;
-const candlePadding = 9.7;
+const height = 500 - margin.top - margin.bottom;
+const barPadding = 9.7;
 
 const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
@@ -13,9 +13,8 @@ const data = d3.csv("./data/bitcoin/Binance_btc_m_test.csv", function(d, i) {
 
     return {
         date: formatHourMinute(d.date),
+        volume: +d["Volume BTC"],
         open: +d.open,
-        high: +d.high,
-        low: +d.low,
         close: +d.close,
         id: i
     }
@@ -33,11 +32,12 @@ function main() {
 
         //data
         let dates = data.map(d => d.date);
-
+        let x = data.map(d => d.x);
+        let y = data.map(d => d.y);
         var xMin = d3.min(data.map(d => d.date.getTime()));
         var xMax = d3.max(data.map(d => d.date.getTime()));
-        var yMin = d3.min(data.map(d => d.low));
-        var yMax = d3.max(data.map(d => d.high));
+        var yMin = d3.min(data.map(d => d.volume));
+        var yMax = d3.max(data.map(d => d.volume));
 
 
         console.log(dates)
@@ -112,7 +112,7 @@ function main() {
             .style("text-anchor", "middle")
             .style("font-size", "20px")
             .style("font-weight", "bold")
-            .text("Candle Stick Chart (1min)");
+            .text("Volume Bar Chart (1min)");
 
         //grid
         svg.append("g")
@@ -157,48 +157,34 @@ function main() {
             .attr("x", 0 - ((height / 2)))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
-            .text("Price (USD)");
+            .text("Volume (BTC)");
 
         //chart
         var chart = svg.append("g")
             .attr("class", "chart")
             .attr("clip-path", "url(#clip)");
 
-        //candles
+        //bars
         console.log(dates.length*0.3)
-        let candles = chart
-            .selectAll(".candle")
+        let bars = chart
+            .selectAll(".bar")
             .data(data)
             .enter()
             .append("rect")
-            .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + candlePadding)
-            .attr("class", "candle")
+            .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + barPadding)
+            .attr("class", "bar")
             .attr("id", (d, i) => i)
-            .attr("y", d => yScale(Math.max(d.open, d.close)))
+            .attr("y", d => yScale(d.volume))
             .attr("width", xBand.bandwidth())
-            .attr("height", d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close)) - yScale(Math.max(d.open, d.close)))
+            .attr("height", d => height - yScale(d.volume))
             .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "red" : "green"); //change to get last color
-
-        //stems
-        let stems = chart
-            .selectAll(".stem")
-            .data(data)
-            .enter()
-            .append("line")
-            .attr("class", "stem")
-            .attr("x1", (d, i) => xScale(i) - xBand.bandwidth()/2 + candlePadding)
-            .attr("x2", (d, i) => xScale(i) - xBand.bandwidth()/2 + candlePadding)
-            .attr("y1", d => yScale(d.high))
-            .attr("y2", d => yScale(d.low))
-            .attr("stroke", d => (d.open === d.close) ? "white" : (d.open > d.close) ? "red" : "green");
-
     })
 }
 
 //sudo code
 //function getLastColor(index) {
-//     if "candle".id == index - 1
-//     return candle.fill;
+//     if "bar".id == index - 1
+//     return bar.fill;
 //}
 
 
