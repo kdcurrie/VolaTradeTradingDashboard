@@ -159,6 +159,14 @@ function main() {
                 .text(function(d) {
                     return d.data.symbol;
                 })
+                .style("opacity", function(d) {
+                    var box = this.getBBox();
+                    if ((d.x1 - d.x0) <= 22 || (d.y1 - d.y0) <= 10) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                });
 
         //
         // //clip path
