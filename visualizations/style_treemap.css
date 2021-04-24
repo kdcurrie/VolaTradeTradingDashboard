@@ -1,47 +1,58 @@
-.axis text {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 11px;
-    fill: #8c9197;
+rect {
+    /*fill: cadetblue;*/
+    /*opacity: 0.3;*/
+    stroke: white;
 }
 
-.label {
-    font-family: 'Open Sans', sans-serif;
-    fill: #8c9197;
+text {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    fill: white;
+    font-size: 8px;
 }
+/*.axis text {*/
+/*    font-family: 'Open Sans', sans-serif;*/
+/*    font-size: 11px;*/
+/*    fill: #8c9197;*/
+/*}*/
 
-.title {
-    font-family: 'Open Sans', sans-serif;
-    fill: #8c9197;
-}
+/*.label {*/
+/*    font-family: 'Open Sans', sans-serif;*/
+/*    fill: #8c9197;*/
+/*}*/
 
-.domain {
-    stroke: #23272d;
-}
+/*.title {*/
+/*    font-family: 'Open Sans', sans-serif;*/
+/*    fill: #8c9197;*/
+/*}*/
 
-.axis--y line {
-    stroke: #454c55;
-}
+/*.domain {*/
+/*    stroke: #23272d;*/
+/*}*/
 
-.axis--y path {
-    stroke: #454c55;
-}
+/*.axis--y line {*/
+/*    stroke: #454c55;*/
+/*}*/
 
-.axis--y text {
-    fill: #8c9197;
-}
+/*.axis--y path {*/
+/*    stroke: #454c55;*/
+/*}*/
 
-.axis--x line {
-    stroke: #454c55;
-}
+/*.axis--y text {*/
+/*    fill: #8c9197;*/
+/*}*/
 
-.axis--x path {
-    stroke: #454c55;
-}
+/*.axis--x line {*/
+/*    stroke: #454c55;*/
+/*}*/
 
-.axis--x text {
-    fill: #8c9197;
-}
+/*.axis--x path {*/
+/*    stroke: #454c55;*/
+/*}*/
 
-.grid line {
-    stroke: #23272d;
-}
+/*.axis--x text {*/
+/*    fill: #8c9197;*/
+/*}*/
+
+/*.grid line {*/
+/*    stroke: #23272d;*/
+/*}*/
