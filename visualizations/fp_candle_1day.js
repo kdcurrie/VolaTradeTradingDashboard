@@ -36,7 +36,7 @@ function main() {
         var yMin = d3.min(data.map(d => d.low));
         var yMax = d3.max(data.map(d => d.high));
 
-        //scales
+        //scales & axis
         var xScale = d3.scaleLinear()
             .domain([-1, dates.length])
             .range([0, width]);
@@ -154,7 +154,6 @@ function main() {
             .attr("clip-path", "url(#clip)");
 
         //candles
-        //console.log(dates.length*0.3)
         let candles = chart
             .selectAll(".candle")
             .data(data)
@@ -191,7 +190,7 @@ function main() {
 
         //zoom
         var zoom = d3.zoom()
-            .scaleExtent([1, 100])
+            .scaleExtent([1, 40])
             .extent([[0, 0], [width, height]])
             .translateExtent([[0, 0], [width, height]])
             .on("zoom", zoomed)
