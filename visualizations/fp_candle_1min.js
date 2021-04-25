@@ -7,7 +7,7 @@ const candlePadding = 9.7;
 const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 //loads data
-const data = d3.csv("./data/bitcoin/Binance_btc_m_test.csv", function(d, i) {
+const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -28,8 +28,7 @@ function main() {
 
     data.then(function(data) {
 
-        console.log(data);
-        data.reverse();
+        //console.log(data);
 
         //data
         let dates = data.map(d => d.date);
@@ -40,11 +39,11 @@ function main() {
         var yMax = d3.max(data.map(d => d.high));
 
 
-        console.log(dates)
-        console.log(xMin)
-        console.log(xMax)
-        console.log(yMin)
-        console.log(yMax)
+        // console.log(dates)
+        // console.log(xMin)
+        // console.log(xMax)
+        // console.log(yMin)
+        // console.log(yMax)
 
         //scales
         var xScale = d3.scaleLinear()
@@ -63,7 +62,7 @@ function main() {
                     month = ("0" + month).slice(-2);
                     day = d.getDate()
                     day = ("0" + day).slice(-2);
-                    console.log(d)
+                    //console.log(d)
                     return month + '/' + day
                 }
                 return hours + ':' + minutes
@@ -165,7 +164,7 @@ function main() {
             .attr("clip-path", "url(#clip)");
 
         //candles
-        console.log(dates.length*0.3)
+        //console.log(dates.length*0.3)
         let candles = chart
             .selectAll(".candle")
             .data(data)
@@ -190,9 +189,125 @@ function main() {
             .attr("x2", (d, i) => xScale(i) - xBand.bandwidth()/2 + candlePadding)
             .attr("y1", d => yScale(d.high))
             .attr("y2", d => yScale(d.low))
-            .attr("stroke", d => (d.open === d.close) ? "white" : (d.open > d.close) ? "red" : "green");
+            .attr("stroke", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "red" : "green");
+
+        //clip path
+        svg.append("defs")
+            .append("clipPath")
+            .attr("id", "clip")
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height)
+
+        //zoom
+        var zoom = d3.zoom()
+            .scaleExtent([1, 100])
+            .extent([[0, 0], [width, height]])
+            .translateExtent([[0, 0], [width, height]])
+            .on("zoom", zoomed)
+            .on("zoom.end", zoomend)
+
+        svg.call(zoom)
+
+        function zoomed(event) {
+            var transform = event.transform;
+            let xZ = transform.rescaleX(xScale);
+
+            gX.call(
+                d3.axisBottom(xZ)
+                    .tickSizeOuter(0)
+                    .tickFormat((d) => {
+                    if (d >= 0 && d <= dates.length-1) {
+                        d = dates[d]
+                        hours = d.getHours()
+                        hours = ("0" + hours).slice(-2);
+                        minutes = d.getMinutes()
+                        minutes = ("0" + minutes).slice(-2);
+                        if (hours == "00" && minutes == "00") {
+                            month = months[d.getMonth()]
+                            month = ("0" + month).slice(-2);
+                            day = d.getDate()
+                            day = ("0" + day).slice(-2);
+                            return month + '/' + day
+                        }
+                        return hours + ':' + minutes
+                    }
+                })
+
+            )
+
+            candles
+                .attr("x", (d, i) => xZ(i) - (xBand.bandwidth()*transform.k)/2)
+                .attr("width", xBand.bandwidth()*transform.k);
+
+            stems
+                .attr("x1", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5)
+                .attr("x2", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5);
+
+            gX.selectAll(".tick text")
+                .call(wrap, xBand.bandwidth())
+        }
+
+        var resizeTimer;
+        function zoomend(event) {
+            var transform = event.transform;
+            let xZ = transform.rescaleX(xScale);
+            clearTimeout(resizeTimer)
+            resizeTimer = setTimeout(function() {
+
+                var xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
+                var xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
+                filtered = data.filter(function(d) {
+                    return ((d.date >= xMin) && (d.date <= xMax))
+                });
+                minP = +d3.min(filtered, d => d.low)
+                maxP = +d3.max(filtered, d => d.high)
+                buffer = Math.floor((maxP - minP) * 0.1)
+
+                yScale.domain([minP - buffer, maxP + buffer])
+                candles.transition()
+                    .duration(800)
+                    .attr("y", (d) => yScale(Math.max(d.open, d.close)))
+                    .attr("height",  d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close))-yScale(Math.max(d.open, d.close)));
+
+                stems.transition().duration(800)
+                    .attr("y1", (d) => yScale(d.high))
+                    .attr("y2", (d) => yScale(d.low))
+
+                gY.transition().duration(800).call(
+                    d3.axisRight()
+                        .tickSizeOuter(0)
+                        .scale(yScale));
+
+            }, 50)
+
+        }
 
     })
+}
+
+function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            }
+        }
+    });
 }
 
 //sudo code
