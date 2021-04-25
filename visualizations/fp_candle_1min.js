@@ -7,7 +7,7 @@ const candlePadding = 9.7;
 const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 //loads data
-const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
+const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse_short.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -209,6 +209,7 @@ function main() {
 
         svg.call(zoom)
 
+        //zoomed
         function zoomed(event) {
             var transform = event.transform;
             let xZ = transform.rescaleX(xScale);
@@ -243,78 +244,41 @@ function main() {
             stems
                 .attr("x1", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5)
                 .attr("x2", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5);
-
-            gX.selectAll(".tick text")
-                .call(wrap, xBand.bandwidth())
         }
 
-        var resizeTimer;
+        //end of zoom
         function zoomend(event) {
             var transform = event.transform;
             let xZ = transform.rescaleX(xScale);
-            clearTimeout(resizeTimer)
-            resizeTimer = setTimeout(function() {
 
-                var xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
-                var xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
-                filtered = data.filter(function(d) {
-                    return ((d.date >= xMin) && (d.date <= xMax))
-                });
-                minP = +d3.min(filtered, d => d.low)
-                maxP = +d3.max(filtered, d => d.high)
-                buffer = Math.floor((maxP - minP) * 0.1)
+            var xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
+            var xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
+            filtered = data.filter(function(d) {
+                return ((d.date >= xMin) && (d.date <= xMax))
+            });
+            minPrice = d3.min(filtered, d => d.low)
+            maxPrice = d3.max(filtered, d => d.high)
+            buffer = Math.floor((maxPrice - minPrice) * 0.1)
 
-                yScale.domain([minP - buffer, maxP + buffer])
-                candles.transition()
-                    .duration(800)
-                    .attr("y", (d) => yScale(Math.max(d.open, d.close)))
-                    .attr("height",  d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close))-yScale(Math.max(d.open, d.close)));
+            yScale.domain([minPrice - buffer, maxPrice + buffer])
+            candles.transition()
+                .duration(600)
+                .attr("y", (d) => yScale(Math.max(d.open, d.close)))
+                .attr("height",  d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close))-yScale(Math.max(d.open, d.close)));
 
-                stems.transition().duration(800)
-                    .attr("y1", (d) => yScale(d.high))
-                    .attr("y2", (d) => yScale(d.low))
+            stems.transition()
+                .duration(600)
+                .attr("y1", (d) => yScale(d.high))
+                .attr("y2", (d) => yScale(d.low))
 
-                gY.transition().duration(800).call(
-                    d3.axisRight()
-                        .tickSizeOuter(0)
-                        .scale(yScale));
-
-            }, 50)
+            gY.transition()
+                .duration(800)
+                .call(d3.axisRight()
+                    .tickSizeOuter(0)
+                    .scale(yScale));
 
         }
-
     })
 }
-
-function wrap(text, width) {
-    text.each(function () {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // ems
-            y = text.attr("y"),
-            dy = parseFloat(text.attr("dy")),
-            tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-        while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
-                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-            }
-        }
-    });
-}
-
-//sudo code
-//function getLastColor(index) {
-//     if "candle".id == index - 1
-//     return candle.fill;
-//}
-
 
 main();
