@@ -28,8 +28,6 @@ function main() {
 
     data.then(function(data) {
 
-        //console.log(data);
-
         //data
         let dates = data.map(d => d.date);
 
@@ -37,13 +35,6 @@ function main() {
         var xMax = d3.max(data.map(d => d.date.getTime()));
         var yMin = d3.min(data.map(d => d.low));
         var yMax = d3.max(data.map(d => d.high));
-
-
-        // console.log(dates)
-        // console.log(xMin)
-        // console.log(xMax)
-        // console.log(yMin)
-        // console.log(yMax)
 
         //scales
         var xScale = d3.scaleLinear()
@@ -62,7 +53,6 @@ function main() {
                     month = ("0" + month).slice(-2);
                     day = d.getDate()
                     day = ("0" + day).slice(-2);
-                    //console.log(d)
                     return month + '/' + day
                 }
                 return hours + ':' + minutes
@@ -111,17 +101,17 @@ function main() {
             .style("text-anchor", "middle")
             .style("font-size", "20px")
             .style("font-weight", "bold")
-            .text("Candle Stick Chart (1min)");
+            .text("Candle Stick Chart (1 day)");
 
         //grid
-        svg.append("g")
+        var xGrid = svg.append("g")
             .attr("class", "grid")
             .call(d3.axisBottom(xScale)
                 .tickSize(height)
                 .tickFormat("")
             )
 
-        svg.append("g")
+        var yGrid = svg.append("g")
             .attr("class", "grid")
             .call(d3.axisRight(yScale)
                 .tickSize(width)
@@ -147,7 +137,7 @@ function main() {
                 "translate(" + (width/2 + 20) + " ," +
                 (height + margin.top - 10) + ")")
             .style("text-anchor", "middle")
-            .text("Time");
+            .text("Date");
 
         svg.append("text")
             .attr("class", "axis label")
@@ -234,7 +224,6 @@ function main() {
                         return hours + ':' + minutes
                     }
                 })
-
             )
 
             candles
@@ -244,6 +233,12 @@ function main() {
             stems
                 .attr("x1", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5)
                 .attr("x2", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5);
+
+            xGrid.transition()
+                .duration(600)
+                .call(d3.axisBottom(xZ)
+                    .tickSize(height)
+                    .tickFormat(""));
         }
 
         //end of zoom
@@ -272,11 +267,15 @@ function main() {
                 .attr("y2", (d) => yScale(d.low))
 
             gY.transition()
-                .duration(800)
-                .call(d3.axisRight()
-                    .tickSizeOuter(0)
-                    .scale(yScale));
+                .duration(600)
+                .call(d3.axisRight(yScale)
+                    .tickSizeOuter(0));
 
+            yGrid.transition()
+                .duration(600)
+                .call(d3.axisRight(yScale)
+                    .tickSize(width)
+                    .tickFormat(""));
         }
     })
 }
