@@ -10,7 +10,7 @@ const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 const period = ["1 minute"];
 
 //loads data
-const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
+const data = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
