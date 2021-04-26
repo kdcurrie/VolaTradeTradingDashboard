@@ -1,12 +1,12 @@
 //constants
-const margin = {top: 70, right: 100, bottom: 60, left: 70};
-const width = 1200 - margin.left - margin.right;
-const height = 600 - margin.top - margin.bottom;
+// const margin = {top: 70, right: 100, bottom: 60, left: 70};
+// const width = 1200 - margin.left - margin.right;
+// const height = 600 - margin.top - margin.bottom;
 const barPadding = 9.7;
-const titlePaddingX = 10;
-const titlePaddingY = -30;
+// const titlePaddingX = 10;
+// const titlePaddingY = -30;
 
-const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+// const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 const period = ["1 minute"];
 
 //loads data
