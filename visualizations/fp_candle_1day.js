@@ -11,7 +11,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep"
 const period = ["1 day"];
 
 //loads data
-const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
+const data = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
