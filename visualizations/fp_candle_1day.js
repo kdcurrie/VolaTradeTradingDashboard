@@ -1,13 +1,17 @@
 //constants
-const margin = {top: 70, right: 110, bottom: 90, left: 70};
+const margin = {top: 70, right: 100, bottom: 60, left: 70};
 const width = 1200 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
 const candlePadding = 9.7;
+const titlePaddingX = 10;
+const titlePaddingY = -30;
 
 const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
+const period = ["1 day"];
 
 //loads data
-const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse_short.csv", function(d, i) {
+const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -17,7 +21,8 @@ const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse_short.csv", functi
         high: +d.high,
         low: +d.low,
         close: +d.close,
-        id: i
+        id: i,
+        symbol: d.symbol
     }
 });
 
@@ -30,9 +35,8 @@ function main() {
 
         //data
         let dates = data.map(d => d.date);
+        const symbol = data[0].symbol;
 
-        var xMin = d3.min(data.map(d => d.date.getTime()));
-        var xMax = d3.max(data.map(d => d.date.getTime()));
         var yMin = d3.min(data.map(d => d.low));
         var yMax = d3.max(data.map(d => d.high));
 
@@ -48,14 +52,17 @@ function main() {
                 hours = ("0" + hours).slice(-2);
                 minutes = d.getMinutes()
                 minutes = ("0" + minutes).slice(-2);
-                if (hours == "00" && minutes == "00") {
-                    month = months[d.getMonth()]
-                    month = ("0" + month).slice(-2);
-                    day = d.getDate()
-                    day = ("0" + day).slice(-2);
-                    return month + '/' + day
+                day = d.getDate()
+                day = ("0" + day).slice(-2);
+                if (hours == "00" && minutes == "00" && day == "01") {
+                    month = monthNames[d.getMonth()]
+                    return month
                 }
-                return hours + ':' + minutes
+                month = months[d.getMonth()]
+                month = ("0" + month).slice(-2);
+                day = d.getDate()
+                day = ("0" + day).slice(-2);
+                return month + '/' + day
             })
             .tickSizeOuter(0);
 
@@ -96,27 +103,21 @@ function main() {
         //title
         svg.append("text")
             .attr("class", "title")
-            .attr("x", width/2)
-            .attr("y", -30)
-            .style("text-anchor", "middle")
+            .attr("x", titlePaddingX)
+            .attr("y", titlePaddingY)
+            .style("text-anchor", "left")
             .style("font-size", "20px")
             .style("font-weight", "bold")
-            .text("Candle Stick Chart (1 day)");
+            .text("Candlestick " + symbol);
 
-        //grid
-        var xGrid = svg.append("g")
-            .attr("class", "grid")
-            .call(d3.axisBottom(xScale)
-                .tickSize(height)
-                .tickFormat("")
-            )
-
-        var yGrid = svg.append("g")
-            .attr("class", "grid")
-            .call(d3.axisRight(yScale)
-                .tickSize(width)
-                .tickFormat("")
-            )
+        svg.append("text")
+            .attr("class", "subtitle")
+            .attr("x", titlePaddingX)
+            .attr("y", titlePaddingY + 20)
+            .style("text-anchor", "left")
+            .style("font-size", "12px")
+            .style("font-weight", "bold")
+            .text("Period: " + period);
 
         //axes
         var gX = svg.append("g")
@@ -131,22 +132,39 @@ function main() {
 
 
         //axes labels
-        svg.append("text")
-            .attr("class", "axis label")
-            .attr("transform",
-                "translate(" + (width/2 + 20) + " ," +
-                (height + margin.top - 10) + ")")
-            .style("text-anchor", "middle")
-            .text("Date");
+        // svg.append("text")
+        //     .attr("class", "axis label")
+        //     .attr("transform",
+        //         "translate(" + (-40) + " ," +
+        //         (height + margin.bottom - 85) + ")")
+        //     .style("text-anchor", "middle")
+        //     .text("Date");
+        //
+        // svg.append("text")
+        //     .attr("class", "axis label")
+        //     .attr("transform", "rotate(-90)")
+        //     .attr("y", width + 70)
+        //     .attr("x", 0 - ((height / 2)))
+        //     .attr("dy", "1em")
+        //     .style("text-anchor", "middle")
+        //     .text("Price");
 
-        svg.append("text")
-            .attr("class", "axis label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", width + 70)
-            .attr("x", 0 - ((height / 2)))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Price (USD)");
+        //grid
+        var xGrid = svg.append("g")
+            .attr("class", "grid")
+            .attr("clip-path", "url(#clip)")
+            .call(d3.axisBottom(xScale)
+                .tickSize(height)
+                .tickFormat("")
+            )
+
+        var yGrid = svg.append("g")
+            .attr("class", "grid")
+            .attr("clip-path", "url(#clip)")
+            .call(d3.axisRight(yScale)
+                .tickSize(width)
+                .tickFormat("")
+            )
 
         //chart
         var chart = svg.append("g")
@@ -165,7 +183,7 @@ function main() {
             .attr("y", d => yScale(Math.max(d.open, d.close)))
             .attr("width", xBand.bandwidth())
             .attr("height", d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close)) - yScale(Math.max(d.open, d.close)))
-            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "red" : "green"); //change to get last color
+            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
 
         //stems
         let stems = chart
@@ -178,7 +196,7 @@ function main() {
             .attr("x2", (d, i) => xScale(i) - xBand.bandwidth()/2 + candlePadding)
             .attr("y1", d => yScale(d.high))
             .attr("y2", d => yScale(d.low))
-            .attr("stroke", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "red" : "green");
+            .attr("stroke", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076");
 
         //clip path
         svg.append("defs")
@@ -213,14 +231,17 @@ function main() {
                         hours = ("0" + hours).slice(-2);
                         minutes = d.getMinutes()
                         minutes = ("0" + minutes).slice(-2);
-                        if (hours == "00" && minutes == "00") {
-                            month = months[d.getMonth()]
-                            month = ("0" + month).slice(-2);
-                            day = d.getDate()
-                            day = ("0" + day).slice(-2);
-                            return month + '/' + day
+                        day = d.getDate()
+                        day = ("0" + day).slice(-2);
+                        if (hours == "00" && minutes == "00" && day == "01") {
+                            month = monthNames[d.getMonth()]
+                            return month
                         }
-                        return hours + ':' + minutes
+                        month = months[d.getMonth()]
+                        month = ("0" + month).slice(-2);
+                        day = d.getDate()
+                        day = ("0" + day).slice(-2);
+                        return month + '/' + day
                     }
                 })
             )

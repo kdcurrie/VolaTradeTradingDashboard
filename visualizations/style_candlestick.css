@@ -7,9 +7,15 @@
 .label {
     font-family: 'Open Sans', sans-serif;
     fill: #8c9197;
+    font-size: 11px;
 }
 
 .title {
+    font-family: 'Open Sans', sans-serif;
+    fill: #8c9197;
+}
+
+.subtitle {
     font-family: 'Open Sans', sans-serif;
     fill: #8c9197;
 }
@@ -44,4 +50,8 @@
 
 .grid line {
     stroke: #23272d;
+}
+
+.stem rect {
+    shape-rendering: crispEdges;
 }

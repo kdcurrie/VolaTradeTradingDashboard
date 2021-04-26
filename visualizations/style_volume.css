@@ -14,6 +14,11 @@
     fill: #8c9197;
 }
 
+.subtitle {
+    font-family: 'Open Sans', sans-serif;
+    fill: #8c9197;
+}
+
 .domain {
     stroke: #23272d;
 }

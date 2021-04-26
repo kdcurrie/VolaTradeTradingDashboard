@@ -1,22 +1,26 @@
 //constants
-const margin = {top: 70, right: 110, bottom: 90, left: 70};
+const margin = {top: 70, right: 100, bottom: 60, left: 70};
 const width = 1200 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
 const barPadding = 9.7;
+const titlePaddingX = 10;
+const titlePaddingY = -30;
 
 const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+const period = ["1 minute"];
 
 //loads data
-const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_d_reverse_short.csv", function(d, i) {
+const data = d3.csv("./data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
     return {
         date: formatHourMinute(d.date),
-        volume: +d["Volume BTC"],
+        volume: +d["Volume USDT"],
         open: +d.open,
         close: +d.close,
-        id: i
+        id: i,
+        symbol: d.symbol
     }
 });
 
@@ -27,17 +31,12 @@ function main() {
 
     data.then(function(data) {
 
+        const symbol = data[0].symbol;
+
         //data
         let dates = data.map(d => d.date);
-        let x = data.map(d => d.x);
-        let y = data.map(d => d.y);
-        var xMin = d3.min(data.map(d => d.date.getTime()));
-        var xMax = d3.max(data.map(d => d.date.getTime()));
-        var yMin = d3.min(data.map(d => d.volume));
+        //var yMin = d3.min(data.map(d => d.volume));
         var yMax = d3.max(data.map(d => d.volume));
-
-        console.log(yMin)
-        console.log(yMax)
 
 
         //scales & axis
@@ -100,15 +99,25 @@ function main() {
         //title
         svg.append("text")
             .attr("class", "title")
-            .attr("x", width/2)
-            .attr("y", -30)
-            .style("text-anchor", "middle")
+            .attr("x", titlePaddingX)
+            .attr("y", titlePaddingY)
+            .style("text-anchor", "left")
             .style("font-size", "20px")
             .style("font-weight", "bold")
-            .text("Volume Bar Chart (1min)");
+            .text("Volume " + symbol);
+
+        svg.append("text")
+            .attr("class", "subtitle")
+            .attr("x", titlePaddingX)
+            .attr("y", titlePaddingY + 20)
+            .style("text-anchor", "left")
+            .style("font-size", "12px")
+            .style("font-weight", "bold")
+            .text("Period: " + period);
 
         var yGrid = svg.append("g")
             .attr("class", "grid")
+            .attr("clip-path", "url(#clip)")
             .call(d3.axisRight(yScale)
                 .tickSize(width)
                 .tickFormat("")
@@ -127,22 +136,22 @@ function main() {
 
 
         //axes labels
-        svg.append("text")
-            .attr("class", "axis label")
-            .attr("transform",
-                "translate(" + (width/2 + 20) + " ," +
-                (height + margin.top - 10) + ")")
-            .style("text-anchor", "middle")
-            .text("Time");
-
-        svg.append("text")
-            .attr("class", "axis label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", width + 70)
-            .attr("x", 0 - ((height / 2)))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Volume (BTC)");
+        // svg.append("text")
+        //     .attr("class", "axis label")
+        //     .attr("transform",
+        //         "translate(" + (width/2 + 20) + " ," +
+        //         (height + margin.top - 10) + ")")
+        //     .style("text-anchor", "middle")
+        //     .text("Time");
+        //
+        // svg.append("text")
+        //     .attr("class", "axis label")
+        //     .attr("transform", "rotate(-90)")
+        //     .attr("y", width + 70)
+        //     .attr("x", 0 - ((height / 2)))
+        //     .attr("dy", "1em")
+        //     .style("text-anchor", "middle")
+        //     .text("Volume (BTC)");
 
         //chart
         var chart = svg.append("g")
@@ -161,7 +170,7 @@ function main() {
             .attr("y", d => yScale(d.volume))
             .attr("width", xBand.bandwidth())
             .attr("height", d => height - yScale(d.volume))
-            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "red" : "green"); //change to get last color
+            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
 
 
         //clip path
