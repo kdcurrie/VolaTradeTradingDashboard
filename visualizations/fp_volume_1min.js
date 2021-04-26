@@ -1,16 +1,16 @@
 //constants
-const margin = {top: 70, right: 100, bottom: 60, left: 70};
-const width = 1200 - margin.left - margin.right;
-const height = 600 - margin.top - margin.bottom;
-const barPadding = 9.7;
-const titlePaddingX = 10;
-const titlePaddingY = -30;
+var margin = {top: 70, right: 100, bottom: 60, left: 70};
+var width = 1200 - margin.left - margin.right;
+var height = 600 - margin.top - margin.bottom;
+var barPadding = 9.7;
+var titlePaddingX = 10;
+var titlePaddingY = -30;
 
-const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-const period = ["1 minute"];
+var months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+var period = ["1 minute"];
 
 //loads data
-const data = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
+var data = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
 
     var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -31,7 +31,7 @@ function main() {
 
     data.then(function(data) {
 
-        const symbol = data[0].symbol;
+        var symbol = data[0].symbol;
 
         //data
         let dates = data.map(d => d.date);
