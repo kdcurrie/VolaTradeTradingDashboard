@@ -1,17 +1,7 @@
-//constants
-const margin = {top: 70, right: 110, bottom: 90, left: 70};
-const width = 1600 - margin.left - margin.right;
-const height = 1200 - margin.top - margin.bottom;
-
-const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-
-const x = d3.scaleLinear().rangeRound([0, width]);
-const y = d3.scaleLinear().rangeRound([0, height]);
-
 //loads data
-const data = d3.csv("./data/change/change_v1.csv", function(d, i) {
+let dataTree = d3.csv("./visualizations/data/change/change_v1.csv", function(d, i) {
 
-    var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
+    let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
     return {
         date: formatHourMinute(d.date),
@@ -24,15 +14,17 @@ const data = d3.csv("./data/change/change_v1.csv", function(d, i) {
     }
 });
 
-//main
-function main() {
+function drawTreemap() {
 
-    data.then(function(data) {
+    dataTree.then(function(data) {
 
-        //console.log(data);
+        //data
+        let margin = {top: 70, right: 110, bottom: 90, left: 70};
+        let width = 1200 - margin.left - margin.right;
+        let height = 600 - margin.top - margin.bottom;
 
         groupByFamily = d3.group(data, d => d.family)
-        var hierarchy = d3.hierarchy(groupByFamily)
+        let hierarchy = d3.hierarchy(groupByFamily)
         console.log(hierarchy.data)
         console.log(hierarchy.height)
        //console.log(groupByFamily)
@@ -41,62 +33,6 @@ function main() {
         let priceChanges = data.map(d => d.change);
         console.log("max: " + d3.max(priceChanges))
         console.log("min: " + d3.min(priceChanges))
-
-        //
-        // var xMin = d3.min(data.map(d => d.date.getTime()));
-        // var xMax = d3.max(data.map(d => d.date.getTime()));
-        // var yMin = d3.min(data.map(d => d.low));
-        // var yMax = d3.max(data.map(d => d.high));
-        //
-        //
-        // console.log(dates)
-        // console.log(xMin)
-        // console.log(xMax)
-        // console.log(yMin)
-        // console.log(yMax)
-        //
-        // //scales
-        //
-        // var
-        // var xScale = d3.scaleLinear()
-        //     .domain([-1, dates.length])
-        //     .range([0, width]);
-        //
-        // var xAxis = d3.axisBottom(xScale)
-        //     .tickFormat(function(d) {
-        //         d = dates[d]
-        //         hours = d.getHours()
-        //         hours = ("0" + hours).slice(-2);
-        //         minutes = d.getMinutes()
-        //         minutes = ("0" + minutes).slice(-2);
-        //         if (hours == "00" && minutes == "00") {
-        //             month = months[d.getMonth()]
-        //             month = ("0" + month).slice(-2);
-        //             day = d.getDate()
-        //             day = ("0" + day).slice(-2);
-        //             console.log(d)
-        //             return month + '/' + day
-        //         }
-        //         return hours + ':' + minutes
-        //     })
-        //     .tickSizeOuter(0);
-        //
-        // var yScale = d3.scaleLinear()
-        //     .domain([yMin, yMax])
-        //     .range([height, 0])
-        //     .nice();
-        //
-        // var yAxis = d3.axisRight(yScale)
-        //     .tickSizeOuter(0);
-        //
-        // xDateScale = d3.scaleQuantize()
-        //     .domain([0, dates.length])
-        //     .range(dates);
-        //
-        // xBand = d3.scaleBand()
-        //     .domain(d3.range(-1, dates.length))
-        //     .range([0, width])
-        //     .padding(0.3);
 
         let negColorScale = d3.scaleSequential()
             .interpolator(d3.interpolateRgb("#aa2121", "#ed7171"))
@@ -107,16 +43,16 @@ function main() {
             .domain([0, d3.max(priceChanges)]);
 
         //canvas
-        let svg = d3.select("svg")
+        let svg = d3.select("#treemapSVG")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            // .style("background-color", '#191c20')
+            .style("background-color", '#191c20')
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
-        var treemapLayout = d3.treemap()
-            .size([1000, 700])
-            // .paddingOuter(2)
+        let treemapLayout = d3.treemap()
+            .size([1100, 515])
+            .paddingOuter(2)
             // .paddingTop(4)
             .tile(d3.treemapBinary);
 
@@ -127,12 +63,12 @@ function main() {
 
         treemapLayout(hierarchy);
 
-        var nodes = svg
+        let nodes = d3.select("#treemapSVG g")
             .selectAll("g")
             .data(hierarchy.descendants())
             .enter()
             .append("g")
-            .attr('transform', function(d) {return 'translate(' + [d.x0, d.y0] + ')'});
+            .attr('transform', function(d) {return 'translate(' + [d.x0 - 25, d.y0-30] + ')'});
 
             nodes
                 .append('rect')
@@ -144,19 +80,62 @@ function main() {
 
             nodes
                 .append('text')
-                .attr('dx', 4)
-                .attr('dy', 14)
+                .attr("class", "tree-symbol")
+                .attr('dx', 3)
+                .attr('dy', 10)
+                .style("text-anchor", "left")
+                .style("font-size", "10px")
+                .style("font-weight", "bold")
                 .text(function(d) {
-                    return d.data.symbol;
+                    return (d.data.symbol);
                 })
                 .style("opacity", function(d) {
+                    let box = this.getBBox();
                     if ((d.x1 - d.x0) <= 22 || (d.y1 - d.y0) <= 10) {
                         return 0;
                     } else {
                         return 1;
                     }
                 });
+
+        nodes
+            .append('text')
+            .attr("class", "tree-change")
+            .attr('dx', 3)
+            .attr('dy', 20)
+            .style("text-anchor", "left")
+            .style("font-size", "9px")
+            .text(function(d) {
+                return ((typeof d.data.change !== 'undefined' ? (d.data.change + "%") : ""));
+            })
+            .style("opacity", function(d) {
+                let box = this.getBBox();
+                if ((d.x1 - d.x0) <= 25 || (d.y1 - d.y0) <= 22) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            });
+
+        nodes
+            .append('text')
+            .attr("class", "tree-volume")
+            .attr('dx', 3)
+            .attr('dy', 30)
+            .style("text-anchor", "left")
+            .style("font-size", "9px")
+            .text(function(d) {
+                return (d.data.VolumeUSDT);
+            })
+            .style("opacity", function(d) {
+                let box = this.getBBox();
+                if ((d.x1 - d.x0) <= 55 || (d.y1 - d.y0) <= 32) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            });
     })
 }
 
-main();
+drawTreemap();

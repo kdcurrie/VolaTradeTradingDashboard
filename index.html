@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
 <link rel="stylesheet" type="text/css" href="./visualizations/style_candlestick.css">
 <link rel="stylesheet" type="text/css" href="./visualizations/style_volume.css">
+<link rel="stylesheet" type="text/css" href="./visualizations/style_treemap.css">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 <script src="https://d3js.org/d3.v6.min.js"></script>
 <style>
@@ -43,6 +44,18 @@ body, html {
 .bgimg-3 {
   background-image: url("./images/volatrade3.png");
   min-height: 400px;
+}
+
+.w3-content3 {
+  background-color: #191c20;
+}
+
+.w3-content1 {
+  background-color: #191c20;
+}
+
+.w3-content2 {
+  background-color: #191c20;
 }
 
 .w3-wide {letter-spacing: 10px;}
@@ -97,10 +110,11 @@ body, html {
     I will provide 3 different visualizations for this project. First, a candlestick chart which shows the chosen crypto asset's open, high, low, and close price for a given time period.
     Second, a heat map will show the price performance of multiple assets simultaneously. Third a volume bar chart which shows the volume for a given asset for a given time interval. 
   </p>
+  
   <div class="w3-row">
     <div class="w3-col m6 w3-center w3-padding-large">
       <h3><i class="fa fa-user w3-center"></i> Keaton Currie</h3><br>
-      <img src="/images/profilepic.png" class="w3-round w3-image" alt="Photo of Me" width="426" height="424">
+      <img src="./images/profilepic.png" class="w3-round w3-image" alt="Photo of Me" width="426" height="424">
     </div>
     <div class="w3-col m6 w3-center w3-padding-large">
       <h3><i class="fas fa-file w3-center"></i> Project Alpha Release</h3><br>
@@ -109,21 +123,6 @@ body, html {
   </div>
 </div>
 
-<!-- <div class="w3-row w3-center w3-dark-grey w3-padding-16">
-  <div class="w3-third w3-section">
-    <span class="w3-xlarge">8</span><br>
-    Programming Languages
-  </div>
-  <div class="w3-third w3-section">
-    <span class="w3-xlarge">2</span><br>
-    Startups
-  </div>
-  <div class="w3-third w3-section">
-    <span class="w3-xlarge">2</span><br>
-    Majors (Computer Science and Marketing)
-  </div>
-</div> -->
-
 <!-- Second Parallax Image with Project Text -->
 <div class="bgimg-2 w3-display-container w3-opacity-min">
   <div class="w3-display-middle">
@@ -131,30 +130,31 @@ body, html {
   </div>
 </div>
 
-<!-- Container (Project Section) -->
-<div class="w3-content w3-container w3-padding-64" id="project">
-  <h3 class="w3-center">candlestick</h3>
-  <p class="w3-center"><em>Here are the data visualizations for my final project<br> Click on the images to view the visualization blocks</em></p><br>
-
-  <!-- Responsive Grid. Four columns on tablets, laptops and desktops. Will stack on mobile devices/small screens (100% width) -->
+<!-- Container (Project1 Section) -->
+<div class="w3-content1 w3-container w3-padding-64">
+  <h3 class="w3-center w3-text-white">Candlestick Chart</h3>
+  <p class="w3-center w3-text-white"><em>Here are the data visualizations for my final project<br> Click on the images toe view the visualization blocks</em></p><br>
   <div class="w3-row-padding w3-center">
-    <div class="w3-container w3-padding-64">
-      <svg class="object-contain w-full h-auto"></svg>
-      <script src="./visualizations/fp_candle_1day.js"></script>
-    </div>
+    <svg class="w3-contain w-full h-auto" id="candleSVG"></svg>
+    <script src="./visualizations/fp_volume_1min.js"></script>
   </div>
 </div>
 
-<div class="w3-content w3-container w3-padding-64" id="project2">
-  <h3 class="w3-center">Volume Chart</h3>
-  <p class="w3-center"><em>Here are the data visualizations for my final project<br> Click on the images to view the visualization blocks</em></p><br>
+<div class="w3-content2 w3-container w3-padding-64">
+  <h3 class="w3-center w3-text-white">Volume Bar Graph</h3>
+  <p class="w3-center w3-text-white"><em><br> Click on the images to view the visualization blocks</em></p><br>
+  <div class="w3-row-padding w3-center" id="volume1">
+    <svg class="w3-contain w-full h-auto" id="volumeSVG"></svg>
+    <script src="./visualizations/fp_candle_1day.js"></script>
+  </div>
+</div>
 
-  <!-- Responsive Grid. Four columns on tablets, laptops and desktops. Will stack on mobile devices/small screens (100% width) -->
+<div class="w3-content3 w3-container w3-padding-64" id="treemap">
+  <h3 class="w3-center w3-text-white">Price Performance Tree Map</h3>
+  <p class="w3-center w3-text-white"><em><br> Click on the images to view the visualization blocks</em></p><br>
   <div class="w3-row-padding w3-center">
-    <div class="w3-container w3-padding-64">
-      <svg class="object-contain w-full h-auto"></svg>
-      <script src="./visualizations/fp_volume_1min.js"></script>
-    </div>
+    <svg class="w3-contain w-full h-auto"id="treemapSVG"></svg>
+    <script src="./visualizations/fp_treemap.js"></script>
   </div>
 </div>
 
@@ -181,7 +181,7 @@ body, html {
 
   <div class="w3-row w3-padding-32 w3-section">
     <div class="w3-col m4 w3-container">
-      <img src="/images/map.jpg" class="w3-image w3-round" style="width:100%">
+      <img src="./images/map.jpg" class="w3-image w3-round" style="width:100%">
     </div>
     <div class="w3-col m8 w3-panel">
       <div class="w3-large w3-margin-bottom">

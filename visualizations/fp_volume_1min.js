@@ -1,18 +1,8 @@
-//constants
-var margin = {top: 70, right: 100, bottom: 60, left: 70};
-var width = 1200 - margin.left - margin.right;
-var height = 600 - margin.top - margin.bottom;
-var barPadding = 9.7;
-var titlePaddingX = 10;
-var titlePaddingY = -30;
 
-var months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-var period = ["1 minute"];
+//loads datas
+let dataVolume = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
 
-//loads data
-var data = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
-
-    var formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
+    let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
     return {
         date: formatHourMinute(d.date),
@@ -27,24 +17,34 @@ var data = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short
 
 
 //main
-function main() {
+function drawVolume() {
 
-    data.then(function(data) {
+    //constants
+    let margin = {top: 70, right: 100, bottom: 60, left: 70};
+    let width = 1200 - margin.left - margin.right;
+    let height = 600 - margin.top - margin.bottom;
+    let barPadding = 9.7;
+    let titlePaddingX = 10;
+    let titlePaddingY = -30;
 
-        var symbol = data[0].symbol;
+    let months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+    let period = ["1 minute"];
+
+    dataVolume.then(function(data) {
+
+        let symbol = data[0].symbol;
 
         //data
         let dates = data.map(d => d.date);
-        //var yMin = d3.min(data.map(d => d.volume));
-        var yMax = d3.max(data.map(d => d.volume));
+        let yMax = d3.max(data.map(d => d.volume));
 
 
         //scales & axis
-        var xScale = d3.scaleLinear()
+        let xScale = d3.scaleLinear()
             .domain([-1, dates.length])
             .range([0, width]);
 
-        var xAxis = d3.axisBottom(xScale)
+        let xAxis = d3.axisBottom(xScale)
             .tickFormat(function(d) {
                 d = dates[d]
                 hours = d.getHours()
@@ -62,25 +62,25 @@ function main() {
             })
             .tickSizeOuter(0);
 
-        var yScale = d3.scaleLinear()
+        let yScale = d3.scaleLinear()
             .domain([0, yMax])
             .range([height, 0])
             .nice();
 
-        var yAxis = d3.axisRight(yScale)
+        let yAxis = d3.axisRight(yScale)
             .tickSizeOuter(0);
 
-        xDateScale = d3.scaleQuantize()
+        let xDateScale = d3.scaleQuantize()
             .domain([0, dates.length])
             .range(dates);
 
-        xBand = d3.scaleBand()
+        let xBand = d3.scaleBand()
             .domain(d3.range(-1, dates.length))
             .range([0, width])
             .padding(0.3);
 
         //canvas
-        let svg = d3.select("svg")
+        let svg = d3.select("#volumeSVG")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .style("background-color", '#191c20')
@@ -115,7 +115,7 @@ function main() {
             .style("font-weight", "bold")
             .text("Period: " + period);
 
-        var yGrid = svg.append("g")
+        let yGrid = svg.append("g")
             .attr("class", "grid")
             .attr("clip-path", "url(#clip)")
             .call(d3.axisRight(yScale)
@@ -124,12 +124,12 @@ function main() {
             )
 
         //axes
-        var gX = svg.append("g")
+        let gX = svg.append("g")
             .attr("class", "axis--x")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
 
-        var gY = svg.append("g")
+        let gY = svg.append("g")
             .attr("class", "axis--y")
             .attr("transform", "translate(" + width + ", 0)")
             .call(yAxis);
@@ -154,7 +154,7 @@ function main() {
         //     .text("Volume (BTC)");
 
         //chart
-        var chart = svg.append("g")
+        let chart = svg.append("g")
             .attr("class", "chart")
             .attr("clip-path", "url(#clip)");
 
@@ -182,7 +182,7 @@ function main() {
             .attr("height", height)
 
         //zoom
-        var zoom = d3.zoom()
+        let zoom = d3.zoom()
             .scaleExtent([1, 40])
             .extent([[0, 0], [width, height]])
             .translateExtent([[0, 0], [width, height]])
@@ -193,7 +193,7 @@ function main() {
 
         //zoomed
         function zoomed(event) {
-            var transform = event.transform;
+            let transform = event.transform;
             let xZ = transform.rescaleX(xScale);
 
             gX.call(
@@ -225,11 +225,11 @@ function main() {
 
         //end of zoom
         function zoomend(event) {
-            var transform = event.transform;
+            let transform = event.transform;
             let xZ = transform.rescaleX(xScale);
 
-            var xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
-            var xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
+            let xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
+            let xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
             filtered = data.filter(function(d) {
                 return ((d.date >= xMin) && (d.date <= xMax))
             });
@@ -258,4 +258,4 @@ function main() {
 }
 
 
-main();
+drawVolume();
