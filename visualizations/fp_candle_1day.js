@@ -259,15 +259,15 @@ function drawCandle() {
                 let toolClose = d3.select(this).attr("close");
 
                 //Update the tooltip position and value
-                d3.select("#tooltip")
+                d3.select("#candleTooltip")
                     .style("left", toolPaddingX + "px")
                     .style("top",  toolPaddingY + "px")
                     .style("visibility", "visible")
-                    .select("#value")
+                    .select("#candleValue")
                     .html(toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose));
 
                 //Show the tooltip
-                d3.select("#tooltip").classed("hidden", false);
+                d3.select("#candleTooltip").classed("hidden", false);
             })
 
         //clip path
