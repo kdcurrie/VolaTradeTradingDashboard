@@ -1,6 +1,6 @@
 
 //loads data
-let dataCandle = d3.csv(".visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
+let dataCandle = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
 
     let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
