@@ -65,7 +65,7 @@ rect:hover {
     fill: orange;
 }
 
-#candleTooltip {
+#tooltip {
     position: absolute;
     width: 600px;
     height: auto;
@@ -73,11 +73,11 @@ rect:hover {
     pointer-events: none;
 }
 
-#candleTooltip.hidden {
+#tooltip.hidden {
     display: none;
 }
 
-#candleTooltip p {
+#tooltip p {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;

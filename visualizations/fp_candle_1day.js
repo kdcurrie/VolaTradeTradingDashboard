@@ -251,23 +251,21 @@ function drawCandle() {
             .style("opacity", 0)
             .on("mouseover", function(d) {
 
-                //Get this bar's x/y values, then augment for the tooltip
                 let toolDate = d3.select(this).attr("date");
                 let toolOpen= d3.select(this).attr("open");
                 let toolHigh = d3.select(this).attr("high");
                 let toolLow = d3.select(this).attr("low");
                 let toolClose = d3.select(this).attr("close");
 
-                //Update the tooltip position and value
-                d3.select("#candleTooltip")
+                //tooltip
+                d3.select("#tooltip")
                     .style("left", toolPaddingX + "px")
                     .style("top",  toolPaddingY + "px")
                     .style("visibility", "visible")
-                    .select("#candleValue")
+                    .select("#value")
                     .html(toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose));
-
-                //Show the tooltip
-                d3.select("#candleTooltip").classed("hidden", false);
+                    
+                d3.select("#tooltip").classed("hidden", false);
             })
 
         //clip path
