@@ -1,6 +1,6 @@
 
 //loads data
-let dataCandle = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
+let dataCandle = d3.csv(".visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
 
     let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -15,6 +15,36 @@ let dataCandle = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse
     }
 });
 
+//function to add trailing zeros
+function addZeroes(value) {
+
+    let new_value = value * 1;
+    new_value = new_value + '';
+
+    let pos = new_value.indexOf('.');
+    if (pos == -1) {
+        new_value = new_value + '.00';
+    }
+    else {
+        let integer = new_value.substring(0, pos);
+        let decimals = new_value.substring(pos+1);
+        while(decimals.length < 2) decimals = decimals + '0';
+        new_value =  integer + '.' + decimals;
+    }
+    return new_value;
+}
+
+//tool tip color function
+function toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose) {
+    let color = (toolOpen == toolClose) ? "silver" : (toolOpen > toolClose) ? "#cf314a" : "#24c076";
+
+    return "<span style = 'color:#8c9197'>Date: </span> <span style='color:#8c9197'>" + toolDate + '</span>' +
+        "<span style = 'color:" + color + "'>&nbsp;&nbsp;&nbsp;&nbsp;Open: </span> <span style='color:" + color + "'>" + toolOpen + '</span>' +
+        "<span style = 'color:" + color + "'> High: </span> <span style='color:" + color + "'>" + toolHigh + '</span>' +
+        "<span style = 'color:" + color + "'> Low: </span> <span style='color:" + color + "'>" + toolLow + '</span>' +
+        "<span style = 'color:" + color + "'> Close: </span> <span style='color:" + color + "'>" + toolClose + '</span>';
+}
+
 //main
 function drawCandle() {
 
@@ -25,6 +55,8 @@ function drawCandle() {
     let candlePadding = 9.7;
     let titlePaddingX = 10;
     let titlePaddingY = -30;
+    let toolPaddingX = 560;
+    let toolPaddingY = 48;
 
     let months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -35,6 +67,7 @@ function drawCandle() {
         //data
         let dates = data.map(d => d.date);
         let symbol = data[0].symbol;
+        //let lastCandle = data[data.length - 1];
 
         let yMin = d3.min(data.map(d => d.low));
         let yMax = d3.max(data.map(d => d.high));
@@ -83,7 +116,7 @@ function drawCandle() {
             .padding(0.3);
 
         //canvas
-        let svg = d3.select("#candleSVG")
+        let svg = d3.select("candleSVG")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .style("background-color", '#191c20')
@@ -109,6 +142,7 @@ function drawCandle() {
             .style("font-weight", "bold")
             .text("Candlestick " + symbol);
 
+        //subtitle
         svg.append("text")
             .attr("class", "subtitle")
             .attr("x", titlePaddingX)
@@ -117,6 +151,15 @@ function drawCandle() {
             .style("font-size", "12px")
             .style("font-weight", "bold")
             .text("Period: " + period);
+
+        //tooltip recent
+        // svg.append("text")
+        //     .attr("class", "recent")
+        //     .attr("x", toolPaddingX)
+        //     .attr("y", toolPaddingY)
+        //     .style("text-anchor", "left")
+        //     .html(toolColor(lastCandle.date, lastCandle.open, lastCandle.high, lastCandle.low, lastCandle.close));
+
 
         //axes
         let gX = svg.append("g")
@@ -151,20 +194,6 @@ function drawCandle() {
             .attr("class", "chart")
             .attr("clip-path", "url(#clip)");
 
-        //candles
-        let candles = chart
-            .selectAll(".candle")
-            .data(data)
-            .enter()
-            .append("rect")
-            .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + candlePadding)
-            .attr("class", "candle")
-            .attr("id", (d, i) => i)
-            .attr("y", d => yScale(Math.max(d.open, d.close)))
-            .attr("width", xBand.bandwidth())
-            .attr("height", d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close)) - yScale(Math.max(d.open, d.close)))
-            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
-
         //stems
         let stems = chart
             .selectAll(".stem")
@@ -177,6 +206,69 @@ function drawCandle() {
             .attr("y1", d => yScale(d.high))
             .attr("y2", d => yScale(d.low))
             .attr("stroke", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076");
+
+        //candles
+        let candles = chart
+            .selectAll(".candle")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("date", d => (d.date.getMonth() + 1) + "/" + d.date.getDate() + "/" + d.date.getFullYear())
+            .attr("open", d => addZeroes(d.open))
+            .attr("high", d => addZeroes(d.high))
+            .attr("low", d => addZeroes(d.low))
+            .attr("close", d => addZeroes(d.close))
+            .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + candlePadding)
+            .attr("class", "candle")
+            .attr("y", d => yScale(Math.max(d.open, d.close)))
+            .attr("width", xBand.bandwidth())
+            .attr("height", d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close)) - yScale(Math.max(d.open, d.close)))
+            .style("fill", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
+
+        //hidden candles for mouseover of x-axis
+        let hiddenCandles = chart
+            .selectAll(".hidden")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("date", function(d) {
+                month = months[d.date.getMonth()]
+                month = ("0" + month).slice(-2);
+                day = d.date.getDate()
+                day = ("0" + day).slice(-2);
+                return month + "/" + day + "/" + d.date.getFullYear()
+            })
+            .attr("open", d => addZeroes(d.open))
+            .attr("high", d => addZeroes(d.high))
+            .attr("low", d => addZeroes(d.low))
+            .attr("close", d => addZeroes(d.close))
+            .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + candlePadding)
+            .attr("class", "hidden")
+            .attr("y", 0)
+            .attr("width", xBand.bandwidth())
+            .attr("height", height)
+            .style("fill", "black")
+            .style("opacity", 0)
+            .on("mouseover", function(d) {
+
+                //Get this bar's x/y values, then augment for the tooltip
+                let toolDate = d3.select(this).attr("date");
+                let toolOpen= d3.select(this).attr("open");
+                let toolHigh = d3.select(this).attr("high");
+                let toolLow = d3.select(this).attr("low");
+                let toolClose = d3.select(this).attr("close");
+
+                //Update the tooltip position and value
+                d3.select("#tooltip")
+                    .style("left", toolPaddingX + "px")
+                    .style("top",  toolPaddingY + "px")
+                    .style("visibility", "visible")
+                    .select("#value")
+                    .html(toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose));
+
+                //Show the tooltip
+                d3.select("#tooltip").classed("hidden", false);
+            })
 
         //clip path
         svg.append("defs")
@@ -234,6 +326,10 @@ function drawCandle() {
                 .attr("x1", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5)
                 .attr("x2", (d, i) => xZ(i) - xBand.bandwidth()/2 + xBand.bandwidth()*0.5);
 
+            hiddenCandles
+                .attr("x", (d, i) => xZ(i) - (xBand.bandwidth()*transform.k)/2)
+                .attr("width", xBand.bandwidth()*transform.k);
+
             xGrid.transition()
                 .duration(600)
                 .call(d3.axisBottom(xZ)
@@ -265,6 +361,11 @@ function drawCandle() {
                 .duration(600)
                 .attr("y1", (d) => yScale(d.high))
                 .attr("y2", (d) => yScale(d.low))
+
+            hiddenCandles.transition()
+                .duration(600)
+                .attr("y", 0)
+                .attr("height",  height);
 
             gY.transition()
                 .duration(600)

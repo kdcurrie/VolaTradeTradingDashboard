@@ -20,6 +20,11 @@
     fill: #8c9197;
 }
 
+.recent {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+}
+
 .domain {
     stroke: #23272d;
 }
@@ -54,4 +59,27 @@
 
 .stem rect {
     shape-rendering: crispEdges;
+}
+
+rect:hover {
+    fill: orange;
+}
+
+#tooltip {
+    position: absolute;
+    width: 600px;
+    height: auto;
+    padding: 10px;
+    pointer-events: none;
+}
+
+#tooltip.hidden {
+    display: none;
+}
+
+#tooltip p {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 20px;
 }
