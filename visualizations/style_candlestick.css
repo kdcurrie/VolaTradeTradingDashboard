@@ -61,23 +61,17 @@
     shape-rendering: crispEdges;
 }
 
-rect:hover {
-    fill: orange;
-}
-
-#tooltip {
-    position: absolute;
-    width: 600px;
-    height: auto;
-    padding: 10px;
+#candleTip {
+    position: relative;
     pointer-events: none;
+
 }
 
-#tooltip.hidden {
+#candleTip.hidden {
     display: none;
 }
 
-#tooltip p {
+#candleTip p {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;

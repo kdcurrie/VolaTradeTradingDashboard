@@ -141,17 +141,17 @@ body, html {
 </div>
 
 <!-- Container (Project1 Section) -->
-<div class="w3-content1 w3-container w3-padding-64" id="dashboard">
+<div class="w3-content1 w3-padding-64" id="dashboard">
   <h3 class="w3-center w3-text-white">Candlestick Chart</h3>
   <p class="w3-center w3-text-white"><em>Candlestick chart with zooming and panning
     <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear candle respectively</em></p><br>
-  <div class="w3-row-padding w3-center">
-    <svg class="w3-contain w-full h-auto" id="candleSVG"></svg>
-    <script src="./visualizations/fp_volume_1min.js"></script>
-  </div>
-  <div id="tooltip" class="hidden">
-    <p><span id="value">100</span></p>
-  </div>
+    <div class="w3-display-container" style="width:100%;height:650px;">
+      <svg class="w3-display-position w3-padding" style="top:15%;left:17%;" id="candleSVG"></svg>
+      <div id="candleTip" class="w3-display-position w3-padding" style="top:22%;left:47%;">
+        <p><span id="value"></span></p>
+      </div>
+      <script src="./visualizations/fp_candle_1day.js"></script>
+    </div>
 </div>
 
 <div class="w3-content2 w3-container w3-padding-64">
@@ -160,7 +160,7 @@ body, html {
     <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p><br>
   <div class="w3-row-padding w3-center" id="volume1">
     <svg class="w3-contain w-full h-auto" id="volumeSVG"></svg>
-    <script src="./visualizations/fp_candle_1day.js"></script>
+    <script src="./visualizations/fp_volume_1min.js"></script>
   </div>
 </div>
 

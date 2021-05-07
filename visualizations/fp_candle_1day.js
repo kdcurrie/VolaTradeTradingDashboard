@@ -227,7 +227,7 @@ function drawCandle() {
 
         //hidden candles for mouseover of x-axis
         let hiddenCandles = chart
-            .selectAll(".hidden")
+            .selectAll(".hiddenCandles")
             .data(data)
             .enter()
             .append("rect")
@@ -243,7 +243,7 @@ function drawCandle() {
             .attr("low", d => addZeroes(d.low))
             .attr("close", d => addZeroes(d.close))
             .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + candlePadding)
-            .attr("class", "hidden")
+            .attr("class", "hiddenCandles")
             .attr("y", 0)
             .attr("width", xBand.bandwidth())
             .attr("height", height)
@@ -258,14 +258,12 @@ function drawCandle() {
                 let toolClose = d3.select(this).attr("close");
 
                 //tooltip
-                d3.select("#tooltip")
-                    .style("left", toolPaddingX + "px")
-                    .style("top",  toolPaddingY + "px")
+                d3.select("#candleTip")
                     .style("visibility", "visible")
                     .select("#value")
                     .html(toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose));
                     
-                d3.select("#tooltip").classed("hidden", false);
+                d3.select("#candleTip").classed("hidden", false);
             })
 
         //clip path
