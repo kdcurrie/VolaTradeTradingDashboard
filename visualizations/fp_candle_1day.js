@@ -116,7 +116,7 @@ function drawCandle() {
             .padding(0.3);
 
         //canvas
-        let svg = d3.select("candleSVG")
+        let svg = d3.select("#candleSVG")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .style("background-color", '#191c20')
