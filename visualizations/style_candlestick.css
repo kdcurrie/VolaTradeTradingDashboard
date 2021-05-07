@@ -61,10 +61,15 @@
     shape-rendering: crispEdges;
 }
 
-#candleTip {
+#candleAndTip {
     position: relative;
-    pointer-events: none;
+}
 
+#candleTip {
+    position: absolute;
+    pointer-events: none;
+    top:7%;
+    left:47%;
 }
 
 #candleTip.hidden {

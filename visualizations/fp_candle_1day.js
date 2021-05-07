@@ -259,6 +259,8 @@ function drawCandle() {
 
                 //tooltip
                 d3.select("#candleTip")
+                    // .style("left", toolPaddingX + "px")
+                    // .style("top",  toolPaddingY + "px")
                     .style("visibility", "visible")
                     .select("#value")
                     .html(toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose));
