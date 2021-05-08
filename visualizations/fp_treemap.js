@@ -27,7 +27,6 @@ function drawTreemap() {
         let hierarchy = d3.hierarchy(groupByFamily)
         console.log(hierarchy.data)
         console.log(hierarchy.height)
-       //console.log(groupByFamily)
 
         //data
         let priceChanges = data.map(d => d.change);

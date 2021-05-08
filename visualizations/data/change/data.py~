@@ -2,8 +2,8 @@ import pandas as pd
 
 data = pd.read_csv("Binance_ETH_d_reverse.csv")
 
-data['symbol'] = data['symbol'].str.replace(r'/USDT', '')
-# data['Volume ETH'] = data['Volume ETH'].round(decimals=2)
+# data['symbol'] = data['symbol'].str.replace(r'/USDT', '')
+data['Volume ETH'] = data['Volume ETH'].round(decimals=2)
 # data['Volume USDT'] = data['Volume USDT'].round(decimals=2)
 
 # data = data.iloc[::-1]

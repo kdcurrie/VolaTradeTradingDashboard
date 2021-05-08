@@ -44,19 +44,37 @@ function toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose) {
         "<span style = 'color:" + color + "'> Close: </span> <span style='color:" + color + "'>" + toolClose + '</span>';
 }
 
+function formatDateCandle(d, dates, months) {
+    d = dates[d]
+    let hours = d.getHours()
+    hours = ("0" + hours).slice(-2);
+    let minutes = d.getMinutes()
+    minutes = ("0" + minutes).slice(-2);
+    let day = d.getDate()
+    day = ("0" + day).slice(-2);
+    let month = months[d.getMonth()]
+    if (hours == "00" && minutes == "00" && day == "01") {
+        return month
+    }
+    month = d.getMonth() + 1;
+    month = ("0" + month).slice(-2);
+    day = d.getDate()
+    day = ("0" + day).slice(-2);
+    return month + '/' + day
+}
+
 //main
 function drawCandle() {
 
     //constants
     let margin = {top: 70, right: 100, bottom: 60, left: 70};
-    let width = 1200 - margin.left - margin.right;
-    let height = 600 - margin.top - margin.bottom;
+    let width = 1400 - margin.left - margin.right;
+    let height = 700 - margin.top - margin.bottom;
     let candlePadding = 9.7;
     let titlePaddingX = 10;
     let titlePaddingY = -30;
 
-    let months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-    let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
     let period = ["1 day"];
 
     dataCandle.then(function(data) {
@@ -75,22 +93,7 @@ function drawCandle() {
 
         let xAxis = d3.axisBottom(xScale)
             .tickFormat(function(d) {
-                d = dates[d]
-                hours = d.getHours()
-                hours = ("0" + hours).slice(-2);
-                minutes = d.getMinutes()
-                minutes = ("0" + minutes).slice(-2);
-                day = d.getDate()
-                day = ("0" + day).slice(-2);
-                if (hours == "00" && minutes == "00" && day == "01") {
-                    month = monthNames[d.getMonth()]
-                    return month
-                }
-                month = months[d.getMonth()]
-                month = ("0" + month).slice(-2);
-                day = d.getDate()
-                day = ("0" + day).slice(-2);
-                return month + '/' + day
+                return formatDateCandle(d, dates, months);
             })
             .tickSizeOuter(0);
 
@@ -214,9 +217,9 @@ function drawCandle() {
             .enter()
             .append("rect")
             .attr("date", function(d) {
-                month = months[d.date.getMonth()]
+                let month = d.date.getMonth()+1;
                 month = ("0" + month).slice(-2);
-                day = d.date.getDate()
+                let day = d.date.getDate()
                 day = ("0" + day).slice(-2);
                 return month + "/" + day + "/" + d.date.getFullYear()
             })
@@ -275,24 +278,7 @@ function drawCandle() {
                 d3.axisBottom(xZ)
                     .tickSizeOuter(0)
                     .tickFormat((d) => {
-                        if (d >= 0 && d <= dates.length-1) {
-                            d = dates[d]
-                            hours = d.getHours()
-                            hours = ("0" + hours).slice(-2);
-                            minutes = d.getMinutes()
-                            minutes = ("0" + minutes).slice(-2);
-                            day = d.getDate()
-                            day = ("0" + day).slice(-2);
-                            if (hours == "00" && minutes == "00" && day == "01") {
-                                month = monthNames[d.getMonth()]
-                                return month
-                            }
-                            month = months[d.getMonth()]
-                            month = ("0" + month).slice(-2);
-                            day = d.getDate()
-                            day = ("0" + day).slice(-2);
-                            return month + '/' + day
-                        }
+                        return formatDateCandle(d, dates, months);
                     })
             )
 
@@ -322,12 +308,12 @@ function drawCandle() {
 
             let xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
             let xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
-            filtered = data.filter(function(d) {
+            let filtered = data.filter(function(d) {
                 return ((d.date >= xMin) && (d.date <= xMax))
             });
-            minPrice = d3.min(filtered, d => d.low)
-            maxPrice = d3.max(filtered, d => d.high)
-            buffer = Math.floor((maxPrice - minPrice) * 0.1)
+            let minPrice = d3.min(filtered, d => d.low)
+            let maxPrice = d3.max(filtered, d => d.high)
+            let buffer = Math.floor((maxPrice - minPrice) * 0.1)
 
             yScale.domain([minPrice - buffer, maxPrice + buffer])
 

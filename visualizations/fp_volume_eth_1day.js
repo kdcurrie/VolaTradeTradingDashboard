@@ -1,5 +1,5 @@
 
-//loads datas
+//loads data
 let dataVolume = d3.csv("./visualizations/data/ethereum/Binance_ETH_d_reverse.csv", function(d, i) {
 
     let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
@@ -7,6 +7,7 @@ let dataVolume = d3.csv("./visualizations/data/ethereum/Binance_ETH_d_reverse.cs
     return {
         date: formatHourMinute(d.date),
         volume: +d["Volume USDT"],
+        volumeAsset: +d["Volume ETH"],
         open: +d.open,
         close: +d.close,
         symbol: d.symbol
@@ -15,11 +16,31 @@ let dataVolume = d3.csv("./visualizations/data/ethereum/Binance_ETH_d_reverse.cs
 
 
 //tool tip color function
-function toolColorVolume(toolDate, toolOpen, toolClose, toolVolume) {
+function toolColorVolume(toolDate, toolOpen, toolClose, toolVolume, toolVolumeAsset, toolSymbol) {
     let color = (toolOpen == toolClose) ? "silver" : (toolOpen > toolClose) ? "#cf314a" : "#24c076";
 
     return "<span style = 'color:#191d20'>Date: </span> <span style='color:#191d20'>" + toolDate + '</span><br>' +
-        "<span style = 'color:" + color + "'>&nbsp;&nbsp;&nbsp;&nbsp;Volume: </span> <span style='color:" + color + "'>" + toolVolume + '</span>';
+        "<span style = 'color:" + color + "'>Volume USDT: </span> <span style='color:" +
+        color + "'>" + toolVolume + '</span><br>' + "<span style = 'color:" + color +
+        "'>Volume </span> <span style='color:" + color + "'>" + toolSymbol +": "+  toolVolumeAsset + '</span>';
+}
+
+function formatDateVolume(d, dates, months) {
+    if (d >= 0 && d <= dates.length-1) {
+        d = dates[d]
+        let hours = d.getHours()
+        hours = ("0" + hours).slice(-2);
+        let minutes = d.getMinutes()
+        minutes = ("0" + minutes).slice(-2);
+        if (hours == "00" && minutes == "00") {
+            let month = months[d.getMonth()]
+            month = ("0" + month).slice(-2);
+            let day = d.getDate()
+            day = ("0" + day).slice(-2);
+            return month + '/' + day
+        }
+        return hours + ':' + minutes
+    }
 }
 
 //main
@@ -27,8 +48,8 @@ function drawVolume() {
 
     //constants
     let margin = {top: 70, right: 100, bottom: 60, left: 70};
-    let width = 1200 - margin.left - margin.right;
-    let height = 600 - margin.top - margin.bottom;
+    let width = 1400 - margin.left - margin.right;
+    let height = 700 - margin.top - margin.bottom;
     let barPadding = 9.7;
     let titlePaddingX = 10;
     let titlePaddingY = -30;
@@ -42,7 +63,7 @@ function drawVolume() {
 
         //data
         let dates = data.map(d => d.date);
-        let symbol = data[0].symbol;
+        let symbol = data[0].symbol + "/USDT";
 
         let yMax = d3.max(data.map(d => d.volume));
 
@@ -54,19 +75,7 @@ function drawVolume() {
 
         let xAxis = d3.axisBottom(xScale)
             .tickFormat(function(d) {
-                d = dates[d]
-                hours = d.getHours()
-                hours = ("0" + hours).slice(-2);
-                minutes = d.getMinutes()
-                minutes = ("0" + minutes).slice(-2);
-                if (hours == "00" && minutes == "00") {
-                    month = months[d.getMonth()]
-                    month = ("0" + month).slice(-2);
-                    day = d.getDate()
-                    day = ("0" + day).slice(-2);
-                    return month + '/' + day
-                }
-                return hours + ':' + minutes
+                return formatDateVolume(d, dates, months);
             })
             .tickSizeOuter(0);
 
@@ -106,7 +115,7 @@ function drawVolume() {
             .attr("height", height)
             .style("fill", "none")
             .style("pointer-events", "all")
-            .attr("clip-path", "url(#clip)");
+            .attr("clip-path", "url(#clip2)");
 
         //title
         svg.append("text")
@@ -118,6 +127,7 @@ function drawVolume() {
             .style("font-weight", "bold")
             .text("Volume " + symbol);
 
+        //subtitle
         svg.append("text")
             .attr("class", "subtitle")
             .attr("x", titlePaddingX)
@@ -127,9 +137,10 @@ function drawVolume() {
             .style("font-weight", "bold")
             .text("Period: " + period);
 
+        //grid
         let yGrid = svg.append("g")
             .attr("class", "grid")
-            .attr("clip-path", "url(#clip)")
+            .attr("clip-path", "url(#clip2)")
             .call(d3.axisRight(yScale)
                 .tickSize(width)
                 .tickFormat("")
@@ -149,7 +160,7 @@ function drawVolume() {
         //chart
         let chart = svg.append("g")
             .attr("class", "chart")
-            .attr("clip-path", "url(#clip)");
+            .attr("clip-path", "url(#clip2)");
 
         //bars
         let bars = chart
@@ -164,10 +175,6 @@ function drawVolume() {
             .attr("width", xBand.bandwidth())
             .attr("height", d => height - yScale(d.volume))
             .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076") //change to get last color
-            // .on("mouseover", function() {
-            //         d3.select(this)
-            //             .attr("fill", "orange");
-            //     });
 
         //hidden bars for mouseover
         let hiddenBars = chart
@@ -176,15 +183,17 @@ function drawVolume() {
             .enter()
             .append("rect")
             .attr("date", function(d) {
-                month = months[d.date.getMonth()]
+                let month = months[d.date.getMonth()]
                 month = ("0" + month).slice(-2);
-                day = d.date.getDate();
+                let day = d.date.getDate();
                 day = ("0" + day).slice(-2);
                 return month + "/" + day + "/" + d.date.getFullYear();
             })
             .attr("open", d => d.open)
             .attr("close", d => d.close)
             .attr("volume", d => d.volume)
+            .attr("volumeAsset", d => d.volumeAsset)
+            .attr("symbol", d => d.symbol)
             .attr("x", (d, i) => xScale(i) - xHiddenBand.bandwidth() + barPadding)
             .attr("class", "hiddenBars")
             .attr("id", (d, i) => i)
@@ -192,26 +201,27 @@ function drawVolume() {
             .attr("width", xHiddenBand.bandwidth())
             .attr("height", d => height - yScale(d.volume))
             .attr("fill", "#76169a")
-            .style("opacity", 0) //change to get last color
+            .style("opacity", 0)
             .on("mouseover", function(d) {
 
-                d3.select(this).style("opacity", 1).attr("fill", "#76169a");
+                d3.select(this).style("opacity", 1);
 
-                //Get this bar's x/y values, then augment for the tooltip
-                var xPosition = parseFloat(d3.select(this).attr("x")) + xBand.bandwidth() + 150;
-                var yPosition = parseFloat(d3.select(this).attr("y")) + 30;
+                let xPosition = parseFloat(d3.select(this).attr("x")) + xBand.bandwidth() + 150;
+                let yPosition = parseFloat(d3.select(this).attr("y")) + 30;
                 let toolDate = d3.select(this).attr("date");
                 let toolOpen= d3.select(this).attr("open");
                 let toolClose = d3.select(this).attr("close");
                 let toolVolume= d3.select(this).attr("volume");
+                let toolVolumeAsset= d3.select(this).attr("volumeAsset");
+                let toolSymbol= d3.select(this).attr("symbol");
 
-                //Update the tooltip position and value
+
                 d3.select("#volumeTip")
                     .style("left", xPosition + "px")
                     .style("top", yPosition + "px")
                     .style("visibility", "visible")
                     .select("#value2")
-                    .html(toolColorVolume(toolDate, toolOpen, toolClose, toolVolume));
+                    .html(toolColorVolume(toolDate, toolOpen, toolClose, toolVolume, toolVolumeAsset, toolSymbol));
 
                 //Show the tooltip
                 d3.select("#volumeTip").classed("hidden", false);
@@ -228,7 +238,7 @@ function drawVolume() {
         //clip path
         svg.append("defs")
             .append("clipPath")
-            .attr("id", "clip")
+            .attr("id", "clip2")
             .append("rect")
             .attr("width", width)
             .attr("height", height)
@@ -252,21 +262,7 @@ function drawVolume() {
                 d3.axisBottom(xZ)
                     .tickSizeOuter(0)
                     .tickFormat((d) => {
-                        if (d >= 0 && d <= dates.length-1) {
-                            d = dates[d]
-                            hours = d.getHours()
-                            hours = ("0" + hours).slice(-2);
-                            minutes = d.getMinutes()
-                            minutes = ("0" + minutes).slice(-2);
-                            if (hours == "00" && minutes == "00") {
-                                month = months[d.getMonth()]
-                                month = ("0" + month).slice(-2);
-                                day = d.getDate()
-                                day = ("0" + day).slice(-2);
-                                return month + '/' + day
-                            }
-                            return hours + ':' + minutes
-                        }
+                        return formatDateVolume(d, dates, months);;
                     })
             )
 
@@ -286,12 +282,12 @@ function drawVolume() {
 
             let xMin = new Date(xDateScale(Math.floor(xZ.domain()[0])))
             let xMax = new Date(xDateScale(Math.floor(xZ.domain()[1])))
-            filtered = data.filter(function(d) {
+            let filtered = data.filter(function(d) {
                 return ((d.date >= xMin) && (d.date <= xMax))
             });
-            minVolume = d3.min(filtered, d => d.volume)
-            maxVolume = d3.max(filtered, d => d.volume)
-            buffer = Math.floor((maxVolume - minVolume) * 0.02)
+            let minVolume = d3.min(filtered, d => d.volume)
+            let maxVolume = d3.max(filtered, d => d.volume)
+            let buffer = Math.floor((maxVolume - minVolume) * 0.02)
 
             yScale.domain([0, maxVolume + buffer])
 

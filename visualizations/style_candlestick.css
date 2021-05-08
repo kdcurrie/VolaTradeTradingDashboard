@@ -64,8 +64,8 @@
     position: absolute;
     width:600px;
     pointer-events: none;
-    top:7%;
-    left:46%;
+    top:5%;
+    left:52%;
 }
 
 #candleTip.hidden {
@@ -77,4 +77,14 @@
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     line-height: 20px;
+}
+
+#candleNote {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    background-color: #76169a;
+}
+
+candleSearchIcon {
+    fill: #8c9197;
 }

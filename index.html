@@ -68,6 +68,11 @@ body, html {
   color: #24c076;
 }
 
+.candleSearchIcon
+{
+  color: #76169a;
+}
+
 .w3-wide {letter-spacing: 10px;}
 .w3-hover-opacity {cursor: pointer;}
 
@@ -140,38 +145,34 @@ body, html {
   </div>
 </div>
 
-<!-- Container (Project1 Section) -->
+<!-- Container (Dashboard Section) -->
 <div class="w3-content2 w3-container w3-padding-64" id="dashboard">
   <h3 class="w3-center w3-text-white">Candlestick Chart</h3>
-  <p class="w3-center w3-text-white"><em><br>Candlestick chart with zooming and panning
-    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p><br>
+  <p class="w3-center w3-text-white"><em>Candlestick chart with interactive zooming, panning, and tooltip
+    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p>
+  <p class="w3-center w3-text-white"><br><span class="w3-tag w3-round" id="candleNote">Double click or mouse wheel to zoom in and out
+  <br>Hold left-click and drag to explore the chart</span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="candleSearchIcon fa fa-search w3-xxlarge"></i></p>
+
   <div class="w3-row-padding w3-center" id="candleAndTip">
-    <svg class="w3-contain w-full h-auto" id="candleSVG"></svg>
+    <svg class="w3-container w-full h-auto" id="candleSVG"></svg>
     <script src="visualizations/fp_candle_btc_1day.js"></script>
     <div class="w3-contain w3-padding" id="candleTip">
       <p><span id="value"></span></p>
     </div>
+<!--    <p class="w3-left w3-text-white" id="candleNote">Double click or mouse wheel<br>to zoom in and out</p>-->
   </div>
 
   <h3 class="w3-center w3-text-white">Volume Bar Graph</h3>
   <p class="w3-center w3-text-white"><em><br>Volume bar graph with zooming and panning
     <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p><br>
   <div class="w3-row-padding w3-center" id="volumeAndTip">
-    <svg class="w3-contain w-full h-auto" id="volumeSVG"></svg>
+    <svg class="w3-container w-full h-auto" id="volumeSVG"></svg>
     <script src="./visualizations/fp_volume_eth_1day.js"></script>
-    <div class="w3-contain w3-padding" id="volumeTip">
+    <div class="w3-contain w3-padding hidden" id="volumeTip">
       <p><span id="value2"></span></p>
     </div>
   </div>
 
-<!--  <h3 class="w3-center w3-text-white">Volume Bar Graph</h3>-->
-<!--  <p class="w3-center w3-text-white"><em><br>Volume bar graph with zooming and panning-->
-<!--    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p><br>-->
-<!--  <div class="w3-row-padding w3-center" id="volume1">-->
-<!--    <svg class="w3-contain w-full h-auto" id="volumeSVG"></svg>-->
-<!--    <script src="visualizations/fp_volume_eth_1day.js"></script>-->
-<!--  </div>-->
-<!--</div>-->
   <h3 class="w3-center w3-text-white">Price Performance Tree Map</h3>
   <p class="w3-center w3-text-white"><em><br>Tree map with diverging color scale
     <br>Cryptocurrencies are grouped together by hashing algorithm
