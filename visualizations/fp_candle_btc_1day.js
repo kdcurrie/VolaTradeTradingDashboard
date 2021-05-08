@@ -10,7 +10,6 @@ let dataCandle = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse
         high: +d.high,
         low: +d.low,
         close: +d.close,
-        id: i,
         symbol: d.symbol
     }
 });
@@ -55,8 +54,6 @@ function drawCandle() {
     let candlePadding = 9.7;
     let titlePaddingX = 10;
     let titlePaddingY = -30;
-    let toolPaddingX = 560;
-    let toolPaddingY = 48;
 
     let months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -67,7 +64,6 @@ function drawCandle() {
         //data
         let dates = data.map(d => d.date);
         let symbol = data[0].symbol;
-        //let lastCandle = data[data.length - 1];
 
         let yMin = d3.min(data.map(d => d.low));
         let yMax = d3.max(data.map(d => d.high));
@@ -152,15 +148,6 @@ function drawCandle() {
             .style("font-weight", "bold")
             .text("Period: " + period);
 
-        //tooltip recent
-        // svg.append("text")
-        //     .attr("class", "recent")
-        //     .attr("x", toolPaddingX)
-        //     .attr("y", toolPaddingY)
-        //     .style("text-anchor", "left")
-        //     .html(toolColor(lastCandle.date, lastCandle.open, lastCandle.high, lastCandle.low, lastCandle.close));
-
-
         //axes
         let gX = svg.append("g")
             .attr("class", "axis--x")
@@ -213,11 +200,6 @@ function drawCandle() {
             .data(data)
             .enter()
             .append("rect")
-            .attr("date", d => (d.date.getMonth() + 1) + "/" + d.date.getDate() + "/" + d.date.getFullYear())
-            .attr("open", d => addZeroes(d.open))
-            .attr("high", d => addZeroes(d.high))
-            .attr("low", d => addZeroes(d.low))
-            .attr("close", d => addZeroes(d.close))
             .attr("x", (d, i) => xScale(i) - xBand.bandwidth() + candlePadding)
             .attr("class", "candle")
             .attr("y", d => yScale(Math.max(d.open, d.close)))
@@ -259,8 +241,6 @@ function drawCandle() {
 
                 //tooltip
                 d3.select("#candleTip")
-                    // .style("left", toolPaddingX + "px")
-                    // .style("top",  toolPaddingY + "px")
                     .style("visibility", "visible")
                     .select("#value")
                     .html(toolColor(toolDate, toolOpen, toolHigh, toolLow, toolClose));
@@ -350,6 +330,7 @@ function drawCandle() {
             buffer = Math.floor((maxPrice - minPrice) * 0.1)
 
             yScale.domain([minPrice - buffer, maxPrice + buffer])
+
             candles.transition()
                 .duration(600)
                 .attr("y", (d) => yScale(Math.max(d.open, d.close)))

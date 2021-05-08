@@ -1,6 +1,6 @@
 
 //loads datas
-let dataVolume = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse_short.csv", function(d, i) {
+let dataVolume = d3.csv("./visualizations/data/ethereum/Binance_ETH_d_reverse.csv", function(d, i) {
 
     let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -9,12 +9,18 @@ let dataVolume = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_m_reverse
         volume: +d["Volume USDT"],
         open: +d.open,
         close: +d.close,
-        id: i,
         symbol: d.symbol
     }
 });
 
 
+//tool tip color function
+function toolColorVolume(toolDate, toolOpen, toolClose, toolVolume) {
+    let color = (toolOpen == toolClose) ? "silver" : (toolOpen > toolClose) ? "#cf314a" : "#24c076";
+
+    return "<span style = 'color:#191d20'>Date: </span> <span style='color:#191d20'>" + toolDate + '</span><br>' +
+        "<span style = 'color:" + color + "'>&nbsp;&nbsp;&nbsp;&nbsp;Volume: </span> <span style='color:" + color + "'>" + toolVolume + '</span>';
+}
 
 //main
 function drawVolume() {
@@ -28,14 +34,16 @@ function drawVolume() {
     let titlePaddingY = -30;
 
     let months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-    let period = ["1 minute"];
+    let period = ["1 day"];
 
     dataVolume.then(function(data) {
 
-        let symbol = data[0].symbol;
+
 
         //data
         let dates = data.map(d => d.date);
+        let symbol = data[0].symbol;
+
         let yMax = d3.max(data.map(d => d.volume));
 
 
@@ -78,6 +86,10 @@ function drawVolume() {
             .domain(d3.range(-1, dates.length))
             .range([0, width])
             .padding(0.3);
+
+        let xHiddenBand = d3.scaleBand()
+            .domain(d3.range(-1, dates.length))
+            .range([0, width]);
 
         //canvas
         let svg = d3.select("#volumeSVG")
@@ -134,25 +146,6 @@ function drawVolume() {
             .attr("transform", "translate(" + width + ", 0)")
             .call(yAxis);
 
-
-        //axes labels
-        // svg.append("text")
-        //     .attr("class", "axis label")
-        //     .attr("transform",
-        //         "translate(" + (width/2 + 20) + " ," +
-        //         (height + margin.top - 10) + ")")
-        //     .style("text-anchor", "middle")
-        //     .text("Time");
-        //
-        // svg.append("text")
-        //     .attr("class", "axis label")
-        //     .attr("transform", "rotate(-90)")
-        //     .attr("y", width + 70)
-        //     .attr("x", 0 - ((height / 2)))
-        //     .attr("dy", "1em")
-        //     .style("text-anchor", "middle")
-        //     .text("Volume (BTC)");
-
         //chart
         let chart = svg.append("g")
             .attr("class", "chart")
@@ -170,8 +163,67 @@ function drawVolume() {
             .attr("y", d => yScale(d.volume))
             .attr("width", xBand.bandwidth())
             .attr("height", d => height - yScale(d.volume))
-            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
+            .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076") //change to get last color
+            // .on("mouseover", function() {
+            //         d3.select(this)
+            //             .attr("fill", "orange");
+            //     });
 
+        //hidden bars for mouseover
+        let hiddenBars = chart
+            .selectAll(".hiddenBars")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("date", function(d) {
+                month = months[d.date.getMonth()]
+                month = ("0" + month).slice(-2);
+                day = d.date.getDate();
+                day = ("0" + day).slice(-2);
+                return month + "/" + day + "/" + d.date.getFullYear();
+            })
+            .attr("open", d => d.open)
+            .attr("close", d => d.close)
+            .attr("volume", d => d.volume)
+            .attr("x", (d, i) => xScale(i) - xHiddenBand.bandwidth() + barPadding)
+            .attr("class", "hiddenBars")
+            .attr("id", (d, i) => i)
+            .attr("y", d => yScale(d.volume))
+            .attr("width", xHiddenBand.bandwidth())
+            .attr("height", d => height - yScale(d.volume))
+            .attr("fill", "#76169a")
+            .style("opacity", 0) //change to get last color
+            .on("mouseover", function(d) {
+
+                d3.select(this).style("opacity", 1).attr("fill", "#76169a");
+
+                //Get this bar's x/y values, then augment for the tooltip
+                var xPosition = parseFloat(d3.select(this).attr("x")) + xBand.bandwidth() + 150;
+                var yPosition = parseFloat(d3.select(this).attr("y")) + 30;
+                let toolDate = d3.select(this).attr("date");
+                let toolOpen= d3.select(this).attr("open");
+                let toolClose = d3.select(this).attr("close");
+                let toolVolume= d3.select(this).attr("volume");
+
+                //Update the tooltip position and value
+                d3.select("#volumeTip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px")
+                    .style("visibility", "visible")
+                    .select("#value2")
+                    .html(toolColorVolume(toolDate, toolOpen, toolClose, toolVolume));
+
+                //Show the tooltip
+                d3.select("#volumeTip").classed("hidden", false);
+
+            })
+            .on("mouseout", function(d) {
+
+                //Hide the tooltip
+                d3.select("#volumeTip").classed("hidden", true);
+                d3.select(this).style("opacity", 0);
+
+            });
 
         //clip path
         svg.append("defs")
@@ -221,6 +273,10 @@ function drawVolume() {
             bars
                 .attr("x", (d, i) => xZ(i) - (xBand.bandwidth()*transform.k)/2)
                 .attr("width", xBand.bandwidth()*transform.k);
+
+            hiddenBars
+                .attr("x", (d, i) => xZ(i) - (xHiddenBand.bandwidth()*transform.k)/2)
+                .attr("width", xHiddenBand.bandwidth()*transform.k);
         }
 
         //end of zoom
@@ -238,7 +294,13 @@ function drawVolume() {
             buffer = Math.floor((maxVolume - minVolume) * 0.02)
 
             yScale.domain([0, maxVolume + buffer])
+
             bars.transition()
+                .duration(600)
+                .attr("y", (d) => yScale(d.volume))
+                .attr("height", d => height - yScale(d.volume))
+
+            hiddenBars.transition()
                 .duration(600)
                 .attr("y", (d) => yScale(d.volume))
                 .attr("height", d => height - yScale(d.volume))

@@ -20,11 +20,6 @@
     fill: #8c9197;
 }
 
-.recent {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 14px;
-}
-
 .domain {
     stroke: #23272d;
 }
@@ -67,9 +62,10 @@
 
 #candleTip {
     position: absolute;
+    width:600px;
     pointer-events: none;
     top:7%;
-    left:47%;
+    left:46%;
 }
 
 #candleTip.hidden {

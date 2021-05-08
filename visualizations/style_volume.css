@@ -50,3 +50,33 @@
 .grid line {
     stroke: #23272d;
 }
+
+#volumeAndTip {
+    position: relative;
+}
+
+#volumeTip {
+    position: absolute;
+    width:215px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+#volumeTip.hidden {
+    display: none;
+}
+
+#volumeTip p {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+}
