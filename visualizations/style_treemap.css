@@ -3,3 +3,47 @@ text {
     fill: white;
     font-size: 8px;
 }
+
+#treeAndTip {
+    position: relative;
+}
+
+#treeTip {
+    position: absolute;
+    width:240px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+#treeTip.hidden {
+    display: none;
+}
+
+#treeTip p {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: left;
+}
+
+.toolTitle{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+}
+
+#treeNote {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    background-color: #76169a;
+    color: white;
+}
+

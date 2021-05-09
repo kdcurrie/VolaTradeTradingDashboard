@@ -60,3 +60,11 @@
     line-height: 20px;
     text-align: left;
 }
+
+#volumeNote {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    background-color: #76169a;
+    color: white;
+}
+

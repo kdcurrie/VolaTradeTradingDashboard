@@ -200,7 +200,7 @@ function drawVolume() {
             .attr("y", d => yScale(d.volume))
             .attr("width", xHiddenBand.bandwidth())
             .attr("height", d => height - yScale(d.volume))
-            .attr("fill", "#76169a")
+            .attr("fill", "#fdcc00")
             .style("opacity", 0)
             .on("mouseover", function(d) {
 

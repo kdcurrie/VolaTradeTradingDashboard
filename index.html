@@ -70,7 +70,17 @@ body, html {
 
 .candleSearchIcon
 {
-  color: #76169a;
+  color: #fdcc00;
+}
+
+.volumeSearchIcon
+{
+  color: #fdcc00;
+}
+
+.treeSearchIcon
+{
+  color: #fdcc00;
 }
 
 .w3-wide {letter-spacing: 10px;}
@@ -150,8 +160,8 @@ body, html {
   <h3 class="w3-center w3-text-white">Candlestick Chart</h3>
   <p class="w3-center w3-text-white"><em>Candlestick chart with interactive zooming, panning, and tooltip
     <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p>
-  <p class="w3-center w3-text-white"><br><span class="w3-tag w3-round" id="candleNote">Double click or mouse wheel to zoom in and out
-  <br>Hold left-click and drag to explore the chart</span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="candleSearchIcon fa fa-search w3-xxlarge"></i></p>
+  <p class="w3-center"><span class="w3-tag w3-round" id="candleNote">1. Double click or mouse wheel to zoom in and out
+  <br>2. Hold left-click and drag to explore the chart<br>3. Hover tooltip shows date, open, high, low, and close</span></p>
 
   <div class="w3-row-padding w3-center" id="candleAndTip">
     <svg class="w3-container w-full h-auto" id="candleSVG"></svg>
@@ -159,12 +169,13 @@ body, html {
     <div class="w3-contain w3-padding" id="candleTip">
       <p><span id="value"></span></p>
     </div>
-<!--    <p class="w3-left w3-text-white" id="candleNote">Double click or mouse wheel<br>to zoom in and out</p>-->
   </div>
 
-  <h3 class="w3-center w3-text-white">Volume Bar Graph</h3>
-  <p class="w3-center w3-text-white"><em><br>Volume bar graph with zooming and panning
-    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p><br>
+  <br><br><h3 class="w3-center w3-text-white">Volume Bar Graph</h3>
+  <p class="w3-center w3-text-white"><em>Volume bar graph with interactive zooming, panning, and tooltip
+    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a bull and bear bar respectively</em></p>
+  <p class="w3-center"><span class="w3-tag w3-round" id="volumeNote">1. Double click or mouse wheel to zoom in and out
+  <br>2. Hold left-click and drag to explore the chart<br>3. Hover tooltip shows date, volume (USDT), and volume (token)</span></p>
   <div class="w3-row-padding w3-center" id="volumeAndTip">
     <svg class="w3-container w-full h-auto" id="volumeSVG"></svg>
     <script src="./visualizations/fp_volume_eth_1day.js"></script>
@@ -173,15 +184,23 @@ body, html {
     </div>
   </div>
 
-  <h3 class="w3-center w3-text-white">Price Performance Tree Map</h3>
-  <p class="w3-center w3-text-white"><em><br>Tree map with diverging color scale
-    <br>Cryptocurrencies are grouped together by hashing algorithm
-    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a positive and negative price performance respectively
-    <br>The symbol of the cryptocurrency is shown, along two indicators, price performance (%) and volume (USDT)</em></p><br>
-  <div class="w3-row-padding w3-center">
-    <svg class="w3-contain w-full h-auto"id="treemapSVG"></svg>
+  <br><br><h3 class="w3-center w3-text-white">Crypto Token Tree Map</h3>
+  <p class="w3-center w3-text-white"><em>Tree map with diverging color scale and tool tip
+    <br>Tokens are grouped together by hashing algorithm
+    <br><span class="greenText">Green</span> and <span class="redText">Red</span> are used to indicate a positive and
+    negative price performance respectively
+  <br>The symbol of the token is shown, along with two indicators, price performance for the day (%) and volume (USDT)</em></p>
+  <p class="w3-center"><span class="w3-tag w3-round" id="treeNote">1. Hover tooltip shows price performance over 1-day, symbol, date
+    <br>volume (USDT), volume (Token), and the hashing algorithm
+  </span></p>
+  <div class="w3-row-padding w3-center" id="treeAndTip">
+    <svg class="w3-container w-full h-auto" id="treemapSVG"></svg>
     <script src="./visualizations/fp_treemap.js"></script>
+    <div class="w3-contain w3-padding hidden" id="treeTip">
+      <p><span id="value3"></span></p>
+    </div>
   </div>
+  <br><br>
 </div>
 
 <!-- Modal for full size images on click-->
