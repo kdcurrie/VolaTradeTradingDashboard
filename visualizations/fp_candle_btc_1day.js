@@ -1,6 +1,6 @@
 
 //loads data
-let dataCandle = d3.csv("./visualizations/data/bitcoin/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
+let dataCandle = d3.csv("./visualizations/data/project/Binance_BTCUSDT_d_reverse.csv", function(d, i) {
 
     let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
@@ -210,6 +210,67 @@ function drawCandle() {
             .attr("height", d => (d.open === d.close) ? 1 : yScale(Math.min(d.open, d.close)) - yScale(Math.max(d.open, d.close)))
             .style("fill", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
 
+
+        const annotations = [
+            {
+                note: { label: "Bitcoin hit its lowest point during the 2018 crash" },
+                data: {close: 3211.72, index:362},
+                dy: -30,
+                dx: 10
+            },
+            {
+                note: { label: "Ethereum begins it bull run temporarily crashing price of Bitcoin"},
+                data: {close: 49066.77, index:1224},
+                dy: 300,
+                dx: -60
+            },
+            {
+                note: { label: "Bitcoin breaks its previous all time high from before the crash, in less than one month it will hit $40,000" },
+                data: {close: 19426.43, index:1094},
+                dy: -40,
+                dx: -60
+            },
+            {
+                note: { label: "New all time high"},
+                data: {close: 62959.53, index:1213},
+                dy: 0,
+                dx: -80
+            },
+            {
+                note: { label: "Warren Buffett says Bitcoin is \"probably rat poison squared\""},
+                data: {close: 9714.00, index:138},
+                dy: -30,
+                dx: 20
+            },
+        ];
+
+        const timeFormat = d3.timeFormat("%d-%b-%y")
+
+        const makeAnnotations = d3.annotation()
+            .editMode(true)
+            //also can set and override in the note.padding property
+            //of the annotation object
+            .notePadding(15)
+            .type(d3.annotationLabel)
+            .annotations(annotations)
+            .accessors({
+                x: d => xScale(d.index) - xBand.bandwidth() + candlePadding,
+                y: d => yScale(d.close)
+            })
+            .accessorsInverse({
+                date: d => timeFormat(x.invert(d.x)),
+                close: d => y.invert(d.y)
+            })
+            .annotations(annotations)
+
+        let annotation = svg.append("g")
+            .attr("class", "annotation-candle")
+            .call(makeAnnotations);
+
+        svg.selectAll("g.annotation-connector, g.annotation-note, g.annotation-subject")
+            .classed("hidden", false)
+
+
         //hidden candles for mouseover of x-axis
         let hiddenCandles = chart
             .selectAll(".hiddenCandles")
@@ -293,6 +354,9 @@ function drawCandle() {
             hiddenCandles
                 .attr("x", (d, i) => xZ(i) - (xBand.bandwidth()*transform.k)/2)
                 .attr("width", xBand.bandwidth()*transform.k);
+
+            svg.selectAll("g.annotation-connector, g.annotation-note, g.annotation-subject")
+                .classed("hidden", true)
 
             xGrid.transition()
                 .duration(600)

@@ -1,15 +1,15 @@
 import pandas as pd
 
-data = pd.read_csv("Binance_ETH_d_reverse.csv")
+data = pd.read_csv("Binance_BTCUSDT_d.csv")
 
 data['symbol'] = data['symbol'].str.replace(r'/USDT', '')
-# data['Volume ETH'] = data['Volume ETH'].round(decimals=2)
-# data['Volume USDT'] = data['Volume USDT'].round(decimals=2)
+data['Volume BTC'] = data['Volume BTC'].round(decimals=2)
+data['Volume USDT'] = data['Volume USDT'].round(decimals=2)
 
-# data = data.iloc[::-1]
+data = data.iloc[::-1]
 
 # data.to_csv("data_treemap.csv", index=False)
-data.to_csv("Binance_ETH_d_reverse.csv", index=False)
+data.to_csv("Binance_BTCUSDT_d_reverse.csv", index=False)
 
 
 # //change

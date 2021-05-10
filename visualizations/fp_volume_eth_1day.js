@@ -1,6 +1,6 @@
 
 //loads data
-let dataVolume = d3.csv("./visualizations/data/ethereum/Binance_ETH_d_reverse.csv", function(d, i) {
+let dataVolume = d3.csv("./visualizations/data/project/Binance_ETHUSDT_d_reverse.csv", function(d, i) {
 
     let formatHourMinute = d3.timeParse("%Y-%m-%d %H:%M:%S");
 

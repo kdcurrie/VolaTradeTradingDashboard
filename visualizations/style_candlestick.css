@@ -85,3 +85,11 @@
     background-color: #76169a;
     color: white;
 }
+
+.hidden {
+    display: none;
+}
+
+text.annotation-note-label {
+    font-size: 9px;
+}
