@@ -220,7 +220,7 @@ function drawCandle() {
                 dx: 10
             },
             {
-                note: { label: "Ethereum begins it bull run temporarily crashing price of Bitcoin"},
+                note: { label: "Ethereum begins its bull run temporarily crashing price of Bitcoin"},
                 data: {close: 49066.77, index:1224},
                 dy: 300,
                 dx: -60
