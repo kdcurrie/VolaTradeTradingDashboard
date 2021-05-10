@@ -36,8 +36,8 @@ function drawTreemap() {
 
         //data
         let margin = {top: 70, right: 110, bottom: 90, left: 70};
-        let width = 1400 - margin.left - margin.right;
-        let height = 700 - margin.top - margin.bottom;
+        let width = 1200 - margin.left - margin.right;
+        let height = 600 - margin.top - margin.bottom;
 
         let priceChanges = data.map(d => d.change);
         let groupByFamily = d3.group(data, d => d.family);
@@ -61,7 +61,7 @@ function drawTreemap() {
             .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
 
         let treemapLayout = d3.treemap()
-            .size([1250, 650])
+            .size([1050, 515])
             .paddingOuter(2)
             .tile(d3.treemapBinary);
 

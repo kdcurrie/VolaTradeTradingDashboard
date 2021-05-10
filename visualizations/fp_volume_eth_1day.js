@@ -48,8 +48,8 @@ function drawVolume() {
 
     //constants
     let margin = {top: 70, right: 100, bottom: 60, left: 70};
-    let width = 1400 - margin.left - margin.right;
-    let height = 700 - margin.top - margin.bottom;
+    let width = 1200 - margin.left - margin.right;
+    let height = 600 - margin.top - margin.bottom;
     let barPadding = 9.7;
     let titlePaddingX = 10;
     let titlePaddingY = -30;
