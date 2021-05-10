@@ -211,7 +211,8 @@ function drawCandle() {
             .style("fill", d => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076"); //change to get last color
 
 
-        const annotations = [
+        //annotations
+        let annotations = [
             {
                 note: { label: "Bitcoin hit its lowest point during the 2018 crash" },
                 data: {close: 3211.72, index:362},
@@ -244,9 +245,9 @@ function drawCandle() {
             },
         ];
 
-        const timeFormat = d3.timeFormat("%d-%b-%y")
+        let timeFormat = d3.timeFormat("%d-%b-%y")
 
-        const makeAnnotations = d3.annotation()
+        let makeAnnotations = d3.annotation()
             .editMode(true)
             //also can set and override in the note.padding property
             //of the annotation object

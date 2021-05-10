@@ -176,6 +176,59 @@ function drawVolume() {
             .attr("height", d => height - yScale(d.volume))
             .style("fill", (d, i) => (d.open === d.close) ? "silver" : (d.open > d.close) ? "#cf314a" : "#24c076") //change to get last color
 
+        let annotations = [
+            {
+                note: { label: "Ethereum's trading volume reaches all time high" },
+                data: {volume: 6103102520.71, index:1227},
+                dy: 10,
+                dx: -65
+            },
+            {
+                note: { label: "Ethereum's trading volume reaches all time low during crash" },
+                data: {volume: 23671711.39, index:314},
+                dy: -40,
+                dx: 20
+            },
+            {
+                note: { label: "Price of bitcoin plummets below $4,000 causing an influx for Ethereum" },
+                data: {volume: 560710331.84, index:815},
+                dy: -30,
+                dx: -15
+            },
+            {
+                note: { label: "Ethereum breaks $1,000 FMO kicks in.." },
+                data: {volume: 2522411859.73, index:1111},
+                dy: -20,
+                dx: -60
+            },
+        ];
+
+        let timeFormat = d3.timeFormat("%d-%b-%y")
+
+        let makeAnnotations = d3.annotation()
+            .editMode(true)
+            //also can set and override in the note.padding property
+            //of the annotation object
+            .notePadding(15)
+            .type(d3.annotationLabel)
+            .annotations(annotations)
+            .accessors({
+                x: d => xScale(d.index) - xBand.bandwidth() + barPadding,
+                y: d => yScale(d.volume)
+            })
+            .accessorsInverse({
+                date: d => timeFormat(x.invert(d.x)),
+                volume: d => y.invert(d.y)
+            })
+            .annotations(annotations)
+
+        let annotation = svg.append("g")
+            .attr("class", "annotation-volume")
+            .call(makeAnnotations);
+
+        svg.selectAll("g.annotation-connector, g.annotation-note, g.annotation-subject")
+            .classed("hidden", false)
+
         //hidden bars for mouseover
         let hiddenBars = chart
             .selectAll(".hiddenBars")
@@ -272,7 +325,10 @@ function drawVolume() {
 
             hiddenBars
                 .attr("x", (d, i) => xZ(i) - (xHiddenBand.bandwidth()*transform.k)/2)
-                .attr("width", xHiddenBand.bandwidth()*transform.k);
+                .attr("width", xHiddenBand.bandwidth()*transform.k)
+
+            svg.selectAll("g.annotation-connector, g.annotation-note, g.annotation-subject")
+                .classed("hidden", true)
         }
 
         //end of zoom

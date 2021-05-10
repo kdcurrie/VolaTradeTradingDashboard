@@ -68,3 +68,12 @@
     color: white;
 }
 
+.hidden {
+    display: none;
+}
+
+text.annotation-note-label {
+    font-size: 9px;
+}
+
+
